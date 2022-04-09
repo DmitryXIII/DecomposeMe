@@ -1,13 +1,16 @@
-package com.ineedyourcode.decomposeme.ui
+package com.ineedyourcode.decomposeme.ui.login
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.databinding.ActivityLoginBinding
-import com.ineedyourcode.decomposeme.domain.contracts.LoginActivityContract
-import com.ineedyourcode.decomposeme.presenter.LoginActivityPresenter
+import com.ineedyourcode.decomposeme.domain.EXTRA_LOGIN_SUCCESS
+import com.ineedyourcode.decomposeme.presenter.login.LoginActivityContract
+import com.ineedyourcode.decomposeme.presenter.login.LoginActivityPresenter
 import com.ineedyourcode.decomposeme.ui.extensions.hideKeyboard
 import com.ineedyourcode.decomposeme.ui.extensions.showSnack
+import com.ineedyourcode.decomposeme.ui.registration.RegistrationActivity
 
 class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
     private lateinit var binding: ActivityLoginBinding
@@ -17,6 +20,13 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        intent.getStringExtra(EXTRA_LOGIN_SUCCESS)?.let {
+            val registeredLogin = it
+            binding.textEditLogin.setText(registeredLogin)
+            binding.root.showSnack(getString(R.string.registration_success, registeredLogin))
+        }
+
         loginPresenter = LoginActivityPresenter().apply { onAttach(this@LoginActivity) }
 
         binding.btnLogin.setOnClickListener {
@@ -24,6 +34,10 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
                 binding.textEditLogin.text.toString(),
                 binding.textEditPassword.text.toString()
             )
+        }
+
+        binding.btnRegistration.setOnClickListener {
+            startActivity(Intent(this, RegistrationActivity::class.java))
         }
 
         binding.btnForgotPassword.setOnClickListener {
@@ -38,10 +52,10 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         }
     }
 
-    override fun setLoginError(message: String) {
+    override fun setLoginError(error: String) {
         binding.root.apply {
             hideKeyboard()
-            showSnack(message)
+            showSnack(error)
         }
     }
 

@@ -52,11 +52,11 @@
         android:id="@+id/btnLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_16dp"
         android:maxLines="1"
         android:text="@string/login"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintEnd_toEndOf="@id/textFieldPassword"
+        app:layout_constraintStart_toStartOf="@id/textFieldPassword"
+        app:layout_constraintTop_toBottomOf="@id/btnForgotPassword" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnForgotPassword"
@@ -66,16 +66,6 @@
         android:text="@string/btn_forgot_password_text"
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="@id/textFieldPassword"
-        app:layout_constraintTop_toBottomOf="@id/textFieldPassword" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnRegistration"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/registration"
-        android:textAllCaps="false"
-        app:layout_constraintStart_toStartOf="@id/textFieldPassword"
         app:layout_constraintTop_toBottomOf="@id/textFieldPassword" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

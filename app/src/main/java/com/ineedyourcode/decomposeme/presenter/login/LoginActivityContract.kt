@@ -1,4 +1,4 @@
-package com.ineedyourcode.decomposeme.domain.contracts
+package com.ineedyourcode.decomposeme.presenter.login
 
 class LoginActivityContract {
     interface LoginView {
@@ -10,7 +10,7 @@ class LoginActivityContract {
     }
 
     interface LoginPresenter {
-        fun onAttach(mView: LoginActivityContract.LoginView)
+        fun onAttach(mView: LoginView)
         fun onLogin(login: String, password: String)
         fun onRegister()
         fun onPasswordRemind(login: String)

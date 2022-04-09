@@ -1,5 +1,9 @@
 package com.ineedyourcode.decomposeme.domain.fakerepository
 
+import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_INVALID_PASSWORD
+import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_LOGIN_NOT_REGISTERED
+import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_LOGIN_REGISTERED_YET
+import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_OK
 import java.util.*
 
 class FakeUserRepository : IFakeUserRepository {
@@ -26,13 +30,21 @@ class FakeUserRepository : IFakeUserRepository {
 
     override fun checkUser(login: String, password: String) =
         if (!userMap.containsKey(login)) {
-            401
+            REQUEST_CODE_LOGIN_NOT_REGISTERED
         } else if (userMap[login]?.userPassword != password) {
-            403
+            REQUEST_CODE_INVALID_PASSWORD
         } else {
-            200
+            REQUEST_CODE_OK
         }
 
     override fun remindUserPassword(login: String) =
         userMap[login]?.userPassword ?: "Логин \"${login}\" не зарегистрирован"
+
+    override fun registerNewUser(login: String, password: String) =
+        if (userMap.containsKey(login)) {
+            REQUEST_CODE_LOGIN_REGISTERED_YET
+        } else {
+            userMap[login] = UserDto(UUID.randomUUID().toString(), login, password)
+            REQUEST_CODE_OK
+        }
 }

@@ -3,25 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:focusableInTouchMode="true"
-    android:focusable="true"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context=".ui.login.LoginActivity">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textFieldLogin"
+        android:id="@+id/textFieldNewLogin"
         android:layout_width="@dimen/zero_value"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_16dp"
         android:layout_marginTop="@dimen/margin_16dp"
-        android:hint="@string/login"
+        android:hint="@string/new_login"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:startIconDrawable="@drawable/ic_userface">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/textEditLogin"
+            android:id="@+id/textEditNewLogin"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:singleLine="true" />
@@ -37,7 +37,7 @@
         app:endIconMode="password_toggle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textFieldLogin"
+        app:layout_constraintTop_toBottomOf="@id/textFieldNewLogin"
         app:startIconDrawable="@drawable/ic_lock">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -48,34 +48,36 @@
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnLogin"
-        android:layout_width="wrap_content"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textFieldRepeatPassword"
+        android:layout_width="@dimen/zero_value"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_16dp"
-        android:maxLines="1"
-        android:text="@string/login"
+        android:layout_marginHorizontal="@dimen/margin_16dp"
+        android:layout_marginTop="@dimen/margin_16dp"
+        android:hint="@string/repeat_password"
+        app:endIconMode="password_toggle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textFieldPassword"
+        app:startIconDrawable="@drawable/ic_lock">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnForgotPassword"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/btn_forgot_password_text"
-        android:textAllCaps="false"
-        app:layout_constraintEnd_toEndOf="@id/textFieldPassword"
-        app:layout_constraintTop_toBottomOf="@id/textFieldPassword" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/textEditRepeatPassword"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textPassword"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnRegistration"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_16dp"
+        android:enabled="false"
+        android:maxLines="1"
         android:text="@string/registration"
-        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="@id/textFieldPassword"
         app:layout_constraintStart_toStartOf="@id/textFieldPassword"
-        app:layout_constraintTop_toBottomOf="@id/textFieldPassword" />
-
+        app:layout_constraintTop_toBottomOf="@id/textFieldRepeatPassword" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,4 +1,4 @@
 package com.ineedyourcode.decomposeme.presenter
 
-class MainActivityPresenter {
+class LoginActivityPresenter {
 }

@@ -5,4 +5,7 @@
     <string name="login">Логин</string>
     <string name="btn_forgot_password_text">Забыли пароль?</string>
     <string name="registration">Регистрация</string>
+    <string name="invalid_password">Неверный пароль</string>
+    <string name="login_can_not_be_blank">Введите логин</string>
+    <string name="login_not_registered">"Логин \"%1$s\" не зарегистрирован"</string>
 </resources>

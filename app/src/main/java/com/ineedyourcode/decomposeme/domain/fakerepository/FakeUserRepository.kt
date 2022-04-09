@@ -1,6 +1,5 @@
 package com.ineedyourcode.decomposeme.domain.fakerepository
 
-import com.ineedyourcode.decomposeme.domain.UserDto
 import java.util.*
 
 class FakeUserRepository : IFakeUserRepository {
@@ -27,11 +26,11 @@ class FakeUserRepository : IFakeUserRepository {
 
     override fun checkUser(login: String, password: String) =
         if (!userMap.containsKey(login)) {
-            "Логин \"${login}\" не зарегистрирован"
+            401
         } else if (userMap[login]?.userPassword != password) {
-            "Неверный пароль"
+            403
         } else {
-            "ок"
+            200
         }
 
     override fun remindUserPassword(login: String) =

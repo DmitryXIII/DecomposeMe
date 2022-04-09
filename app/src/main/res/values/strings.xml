@@ -12,4 +12,5 @@
     <string name="login_registered_yet">Логин \"%1$s\" уже зарегистрирован ранее</string>
     <string name="hello_user">Добро пожаловать, %1$s!</string>
     <string name="registration_success">Логин \"%1$s\" успешно зарегистрирован!</string>
+    <string name="enter_account">Вход в аккаунт</string>
 </resources>

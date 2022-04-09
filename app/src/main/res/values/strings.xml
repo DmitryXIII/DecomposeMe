@@ -7,5 +7,6 @@
     <string name="registration">Регистрация</string>
     <string name="invalid_password">Неверный пароль</string>
     <string name="login_can_not_be_blank">Введите логин</string>
-    <string name="login_not_registered">"Логин \"%1$s\" не зарегистрирован"</string>
+    <string name="login_not_registered">Логин \"%1$s\" не зарегистрирован</string>
+    <string name="hello_user">Добро пожаловать, %1$s!ad</string>
 </resources>

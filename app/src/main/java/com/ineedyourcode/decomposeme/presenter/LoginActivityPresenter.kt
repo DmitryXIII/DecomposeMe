@@ -43,6 +43,10 @@ class LoginActivityPresenter : LoginActivityContract.LoginPresenter {
     }
 
     override fun onPasswordRemind(login: String) {
-        view.showRemindedPassword(userRepository.remindUserPassword(login))
+        if (login.isBlank()) {
+            view.setLoginError((view as LoginActivity).getString(R.string.login_can_not_be_blank))
+        } else {
+            view.showRemindedPassword(userRepository.remindUserPassword(login))
+        }
     }
 }

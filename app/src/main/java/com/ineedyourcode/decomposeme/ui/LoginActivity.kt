@@ -2,6 +2,7 @@ package com.ineedyourcode.decomposeme.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.databinding.ActivityLoginBinding
 import com.ineedyourcode.decomposeme.domain.contracts.LoginActivityContract
 import com.ineedyourcode.decomposeme.presenter.LoginActivityPresenter
@@ -33,7 +34,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
     override fun setLoginSuccess(login: String) {
         binding.root.apply {
             hideKeyboard()
-            showSnack("Добро пожаловать, $login")
+            showSnack(getString(R.string.hello_user, login))
         }
     }
 

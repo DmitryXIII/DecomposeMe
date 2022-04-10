@@ -19,6 +19,5 @@ class LoginActivityContract {
         fun onAccountExit()
         fun onPasswordRemind(login: String)
         fun getUserList(): List<UserDto>
-        fun delUser(login: String)
     }
 }

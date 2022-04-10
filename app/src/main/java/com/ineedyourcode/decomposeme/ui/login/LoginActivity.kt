@@ -1,8 +1,8 @@
 package com.ineedyourcode.decomposeme.ui.login
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.databinding.ActivityLoginBinding
@@ -31,15 +31,11 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
                 root.showSnack(getString(R.string.registration_success, registeredLogin))
             }
 
-            loginPresenter = LoginActivityPresenter().apply {
-                onAttach(this@LoginActivity)
-            }
+            loginPresenter = restorePresenter().apply { onAttach(this@LoginActivity) }
 
             btnRegistration.setOnClickListener {
                 startActivity(registrationActivityIntent)
             }
-
-//        loginPresenter = restorePresenter().apply { onAttach(this@LoginActivity) }
 
             btnLogin.setOnClickListener {
                 loginPresenter.onLogin(
@@ -58,26 +54,22 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         }
     }
 
-//    private fun restorePresenter(): LoginActivityPresenter {
-//        val presenter = lastCustomNonConfigurationInstance as? LoginActivityPresenter
-//        return presenter ?: LoginActivityPresenter()
-//    }
-//
-//    @Deprecated("Deprecated in Java")
-//    override fun onRetainCustomNonConfigurationInstance(): Any {
-//        return loginPresenter
-//    }
+    private fun restorePresenter(): LoginActivityPresenter {
+        val presenter = lastCustomNonConfigurationInstance as? LoginActivityPresenter
+        return presenter ?: LoginActivityPresenter()
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onRetainCustomNonConfigurationInstance(): Any {
+        return loginPresenter
+    }
 
     override fun setLoginSuccess(login: String) {
         with(binding) {
-            root.apply {
-                hideKeyboard()
-                showSnack(getString(R.string.hello_user, login))
-            }
-
-            loginGroup.isVisible = false
+            root.hideKeyboard()
             authorizedGroup.isVisible = true
-            btnAdminUserList.isVisible = false
+            loginGroup.isVisible = false
+            adminGroup.isVisible = false
             tvHelloUser.text = getString(R.string.hello_user, login)
             textEditLogin.text?.clear()
             textEditPassword.text?.clear()
@@ -88,6 +80,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         binding.btnAdminUserList.apply {
             isVisible = true
             setOnClickListener {
+                binding.adminScroll.isVisible = true
                 binding.tvAdminUserList.text = loginPresenter.getUserList().toString()
             }
         }
@@ -104,6 +97,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         with(binding) {
             tvHelloUser.text = getString(R.string.empty_text)
             authorizedGroup.isVisible = false
+            adminGroup.isVisible = false
             loginGroup.isVisible = true
         }
     }
@@ -111,7 +105,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
     override fun showRemindedPassword(remindedPassword: String) {
         binding.root.apply {
             hideKeyboard()
-            showSnack(remindedPassword)
+            showSnack(getString(R.string.reminded_password, remindedPassword))
         }
     }
 
@@ -123,13 +117,3 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
 //        TODO("Not yet implemented")
     }
 }
-
-//binding.btnGetUserList.setOnClickListener {
-//    binding.tvUserList.text = loginPresenter.getUserList().toString()
-//}
-//
-//binding.btnDeleteUser.setOnClickListener {
-//    loginPresenter.delUser(binding.textEditLogin.text.toString())
-//
-//    binding.tvUserList.text = loginPresenter.getUserList().toString()
-//}

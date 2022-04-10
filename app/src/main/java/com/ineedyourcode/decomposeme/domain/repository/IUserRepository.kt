@@ -9,5 +9,5 @@ interface IUserRepository {
     fun remindUserPassword(login: String) : String
     fun addNewUser(login: String, password: String) : Int
     fun getAllUsers() : List<UserDto>
-    fun deleteUser(login: String)
+    fun deleteUser(login: String) : Int
 }

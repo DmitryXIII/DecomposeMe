@@ -31,7 +31,7 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
                         UserEntity(
                             UUID.randomUUID().toString(),
                             "User_$i",
-                            "password$i"
+                            "pass$i"
                         )
                     )
                 }
@@ -80,7 +80,12 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
         return mUserList
     }
 
-    override fun deleteUser(login: String) {
-        roomDataSource.deleteUser(login)
+    override fun deleteUser(login: String): Int {
+        return if (getUser(login) == null) {
+            REQUEST_CODE_LOGIN_NOT_REGISTERED
+        } else {
+            roomDataSource.deleteUser(login)
+            REQUEST_CODE_OK
+        }
     }
 }

@@ -25,23 +25,25 @@ class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.R
         registrationPresenter = RegistrationActivityPresenter()
         registrationPresenter.onAttach(this)
 
-        binding.textEditRepeatPassword.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        with(binding) {
+            textEditRepeatPassword.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
-            override fun afterTextChanged(enteredChars: Editable?) {
-                if (enteredChars.toString() == binding.textEditPassword.text.toString()) {
-                    binding.btnRegistration.isEnabled = true
+                override fun afterTextChanged(enteredChars: Editable?) {
+                    if (enteredChars.toString() == textEditPassword.text.toString()) {
+                        btnRegistration.isEnabled = true
+                    }
                 }
-            }
-        })
+            })
 
-        binding.btnRegistration.setOnClickListener {
-            registrationPresenter.onRegister(
-                binding.textEditNewLogin.text.toString(),
-                binding.textEditRepeatPassword.text.toString()
-            )
+            btnRegistration.setOnClickListener {
+                registrationPresenter.onRegister(
+                    textEditNewLogin.text.toString(),
+                    textEditRepeatPassword.text.toString()
+                )
+            }
         }
     }
 

@@ -145,7 +145,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:constraint_referenced_ids="ivUserAvatar, tvHelloUser, btnAccountExit, btnAdminUserList, adminScroll" />
+        app:constraint_referenced_ids="ivUserAvatar, tvHelloUser, btnAccountExit" />
 
     <androidx.constraintlayout.utils.widget.ImageFilterButton
         android:id="@+id/ivUserAvatar"
@@ -166,6 +166,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivUserAvatar"
         tools:text="@tools:sample/lorem" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/adminGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="adminScroll, btnAdminUserList" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnAdminUserList"

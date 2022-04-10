@@ -23,38 +23,41 @@ class LoginActivityPresenter : LoginActivityContract.LoginPresenter {
             when (userRepository.checkUser(login, password)) {
                 REQUEST_CODE_OK -> {
                     view.setLoginSuccess(login)
+                    if (login == "admin") {
+                        view.setAdminLoginSuccess()
+                    }
                 }
 
-                REQUEST_CODE_LOGIN_NOT_REGISTERED -> {
-                    view.setLoginError(
-                        (view as LoginActivity).getString(R.string.login_not_registered, login)
-                    )
-                }
+            REQUEST_CODE_LOGIN_NOT_REGISTERED -> {
+                view.setLoginError(
+                    (view as LoginActivity).getString(R.string.login_not_registered, login)
+                )
+            }
 
-                REQUEST_CODE_INVALID_PASSWORD -> {
-                    view.setLoginError((view as LoginActivity).getString(R.string.invalid_password))
-                }
+            REQUEST_CODE_INVALID_PASSWORD -> {
+                view.setLoginError((view as LoginActivity).getString(R.string.invalid_password))
             }
         }
     }
+}
 
-    override fun onRegister() {
-        // TODO("Not yet implemented")
-    }
+override fun onAccountExit() {
+    view.exitAccount()
+}
 
-    override fun onPasswordRemind(login: String) {
-        if (login.isBlank()) {
-            view.setLoginError((view as LoginActivity).getString(R.string.login_can_not_be_blank))
-        } else {
-            view.showRemindedPassword(userRepository.remindUserPassword(login))
-        }
+override fun onPasswordRemind(login: String) {
+    if (login.isBlank()) {
+        view.setLoginError((view as LoginActivity).getString(R.string.login_can_not_be_blank))
+    } else {
+        view.showRemindedPassword(userRepository.remindUserPassword(login))
     }
+}
 
-    override fun getUserList() : Map<String, UserDto> {
-       return userRepository.getAllUsers()
-    }
+override fun getUserList(): List<UserDto> {
+    return userRepository.getAllUsers()
+}
 
-    override fun delUser(login: String) {
-        userRepository.deleteUser(login)
-    }
+override fun delUser(login: String) {
+    userRepository.deleteUser(login)
+}
 }

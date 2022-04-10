@@ -5,7 +5,9 @@ import com.ineedyourcode.decomposeme.domain.UserDto
 class LoginActivityContract {
     interface LoginView {
         fun setLoginSuccess(login: String)
+        fun setAdminLoginSuccess()
         fun setLoginError(error: String)
+        fun exitAccount()
         fun showRemindedPassword(remindedPassword: String)
         fun showProgress()
         fun hideProgress()
@@ -14,9 +16,9 @@ class LoginActivityContract {
     interface LoginPresenter {
         fun onAttach(mView: LoginView)
         fun onLogin(login: String, password: String)
-        fun onRegister()
+        fun onAccountExit()
         fun onPasswordRemind(login: String)
-        fun getUserList() : Map<String, UserDto>
+        fun getUserList(): List<UserDto>
         fun delUser(login: String)
     }
 }

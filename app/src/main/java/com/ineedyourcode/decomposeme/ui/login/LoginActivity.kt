@@ -3,6 +3,7 @@ package com.ineedyourcode.decomposeme.ui.login
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.core.view.isVisible
 import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.databinding.ActivityLoginBinding
 import com.ineedyourcode.decomposeme.domain.EXTRA_LOGIN_SUCCESS
@@ -21,54 +22,74 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        intent.getStringExtra(EXTRA_LOGIN_SUCCESS)?.let {
-            val registeredLogin = it
-            binding.textEditLogin.setText(registeredLogin)
-            binding.root.showSnack(getString(R.string.registration_success, registeredLogin))
-        }
+        val registrationActivityIntent = Intent(this, RegistrationActivity::class.java)
 
-        loginPresenter = restorePresenter().apply { onAttach(this@LoginActivity) }
+        with(binding) {
+            intent.getStringExtra(EXTRA_LOGIN_SUCCESS)?.let {
+                val registeredLogin = it
+                textEditLogin.setText(registeredLogin)
+                root.showSnack(getString(R.string.registration_success, registeredLogin))
+            }
 
-        binding.btnGetUserList.setOnClickListener {
-            binding.tvUserList.text = loginPresenter.getUserList().toString()
-        }
+            loginPresenter = LoginActivityPresenter().apply {
+                onAttach(this@LoginActivity)
+            }
 
-        binding.btnDeleteUser.setOnClickListener {
-            loginPresenter.delUser(binding.textEditLogin.text.toString())
+            btnRegistration.setOnClickListener {
+                startActivity(registrationActivityIntent)
+            }
 
-            binding.tvUserList.text = loginPresenter.getUserList().toString()
-        }
+//        loginPresenter = restorePresenter().apply { onAttach(this@LoginActivity) }
 
-        binding.btnLogin.setOnClickListener {
-            loginPresenter.onLogin(
-                binding.textEditLogin.text.toString(),
-                binding.textEditPassword.text.toString()
-            )
-        }
+            btnLogin.setOnClickListener {
+                loginPresenter.onLogin(
+                    textEditLogin.text.toString(),
+                    textEditPassword.text.toString()
+                )
+            }
 
-        binding.btnRegistration.setOnClickListener {
-            startActivity(Intent(this, RegistrationActivity::class.java))
-        }
+            btnForgotPassword.setOnClickListener {
+                loginPresenter.onPasswordRemind(textEditLogin.text.toString())
+            }
 
-        binding.btnForgotPassword.setOnClickListener {
-            loginPresenter.onPasswordRemind(binding.textEditLogin.text.toString())
+            btnAccountExit.setOnClickListener {
+                loginPresenter.onAccountExit()
+            }
         }
     }
 
-    private fun restorePresenter(): LoginActivityPresenter {
-        val presenter = lastCustomNonConfigurationInstance as? LoginActivityPresenter
-        return presenter ?: LoginActivityPresenter()
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onRetainCustomNonConfigurationInstance(): Any {
-        return loginPresenter
-    }
+//    private fun restorePresenter(): LoginActivityPresenter {
+//        val presenter = lastCustomNonConfigurationInstance as? LoginActivityPresenter
+//        return presenter ?: LoginActivityPresenter()
+//    }
+//
+//    @Deprecated("Deprecated in Java")
+//    override fun onRetainCustomNonConfigurationInstance(): Any {
+//        return loginPresenter
+//    }
 
     override fun setLoginSuccess(login: String) {
-        binding.root.apply {
-            hideKeyboard()
-            showSnack(getString(R.string.hello_user, login))
+        with(binding) {
+            root.apply {
+                hideKeyboard()
+                showSnack(getString(R.string.hello_user, login))
+            }
+
+            loginGroup.isVisible = false
+            authorizedGroup.isVisible = true
+            btnAdminUserList.isVisible = false
+            tvHelloUser.text = getString(R.string.hello_user, login)
+            textEditLogin.text?.clear()
+            textEditPassword.text?.clear()
+        }
+    }
+
+    override fun setAdminLoginSuccess() {
+        binding.btnAdminUserList.apply {
+            isVisible = true
+            setOnClickListener {
+                binding.tvAdminUserList.text = loginPresenter.getUserList().toString()
+            }
         }
     }
 
@@ -76,6 +97,14 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         binding.root.apply {
             hideKeyboard()
             showSnack(error)
+        }
+    }
+
+    override fun exitAccount() {
+        with(binding) {
+            tvHelloUser.text = getString(R.string.empty_text)
+            authorizedGroup.isVisible = false
+            loginGroup.isVisible = true
         }
     }
 
@@ -94,3 +123,13 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
 //        TODO("Not yet implemented")
     }
 }
+
+//binding.btnGetUserList.setOnClickListener {
+//    binding.tvUserList.text = loginPresenter.getUserList().toString()
+//}
+//
+//binding.btnDeleteUser.setOnClickListener {
+//    loginPresenter.delUser(binding.textEditLogin.text.toString())
+//
+//    binding.tvUserList.text = loginPresenter.getUserList().toString()
+//}

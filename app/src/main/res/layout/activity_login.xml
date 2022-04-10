@@ -3,13 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:focusableInTouchMode="true"
-    android:focusable="true"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context=".ui.login.LoginActivity">
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/loginGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="tvLoginTitle, textFieldLogin, textFieldPassword, btnRegistration, btnRegistration, btnForgotPassword, btnLogin" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/testGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="scroll, btnDeleteUser, btnGetUserList" />
+
     <TextView
-        android:id="@+id/tvLogin"
+        android:id="@+id/tvLoginTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_16dp"
@@ -20,19 +33,20 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
+        android:id="@+id/scroll"
         android:layout_width="@dimen/zero_value"
         android:layout_height="@dimen/zero_value"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnGetUserList"
         app:layout_constraintBottom_toTopOf="@id/btnLogin"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnGetUserList">
 
         <TextView
             android:id="@+id/tvUserList"
-            android:padding="@dimen/margin_16dp"
-            android:gravity="center_horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:padding="@dimen/margin_16dp" />
     </ScrollView>
 
 
@@ -45,7 +59,7 @@
         android:hint="@string/login"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvLogin"
+        app:layout_constraintTop_toBottomOf="@id/tvLoginTitle"
         app:startIconDrawable="@drawable/ic_userface">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -83,8 +97,8 @@
         android:layout_margin="@dimen/margin_16dp"
         android:maxLines="1"
         android:text="@string/login"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnForgotPassword"
@@ -114,7 +128,7 @@
         android:text="Лист юзеров"
         android:textAllCaps="false"
         app:layout_constraintStart_toStartOf="@id/textFieldPassword"
-        app:layout_constraintTop_toBottomOf="@id/btnRegistration"/>
+        app:layout_constraintTop_toBottomOf="@id/btnRegistration" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnDeleteUser"
@@ -124,7 +138,71 @@
         android:text="Удалить юзера"
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnRegistration"/>
+        app:layout_constraintTop_toBottomOf="@id/btnRegistration" />
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/authorizedGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="ivUserAvatar, tvHelloUser, btnAccountExit, btnAdminUserList, adminScroll" />
+
+    <androidx.constraintlayout.utils.widget.ImageFilterButton
+        android:id="@+id/ivUserAvatar"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_userface"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvHelloUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivUserAvatar"
+        tools:text="@tools:sample/lorem" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAdminUserList"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_16dp"
+        android:text="@string/btn_admin_user_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvHelloUser" />
+
+    <ScrollView
+        android:id="@+id/adminScroll"
+        android:layout_width="@dimen/zero_value"
+        android:layout_height="@dimen/zero_value"
+        app:layout_constraintBottom_toTopOf="@id/btnAccountExit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnAdminUserList">
+
+        <TextView
+            android:id="@+id/tvAdminUserList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:padding="@dimen/margin_16dp" />
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAccountExit"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_16dp"
+        android:text="@string/btn_account_exit"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

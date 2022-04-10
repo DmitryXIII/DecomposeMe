@@ -65,14 +65,14 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
         return REQUEST_CODE_OK
     }
 
-    override fun getAllUsers(): MutableMap<String, UserDto> {
-        val mUserMap = mutableMapOf<String, UserDto>()
+    override fun getAllUsers(): List<UserDto> {
+        val mUserList = mutableListOf<UserDto>()
 
         for (mUser in roomDataSource.getAllUsers()) {
             val user = UserDto(mUser.userId, mUser.userLogin, mUser.userPassword)
-            mUserMap[user.userLogin] = user
+            mUserList.add(user)
         }
-        return mUserMap
+        return mUserList
     }
 
     override fun deleteUser(login: String) {

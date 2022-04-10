@@ -1,9 +1,6 @@
 package com.ineedyourcode.decomposeme.domain.repository
 
-import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_INVALID_PASSWORD
-import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_LOGIN_NOT_REGISTERED
-import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_OK
-import com.ineedyourcode.decomposeme.domain.UserDto
+import com.ineedyourcode.decomposeme.domain.*
 import com.ineedyourcode.decomposeme.domain.db.UserDao
 import com.ineedyourcode.decomposeme.domain.db.UserEntity
 import java.util.*
@@ -23,8 +20,8 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
                     roomDataSource.insertNewUser(
                         UserEntity(
                             UUID.randomUUID().toString(),
-                            "admin",
-                            "admin"
+                            ADMIN_LOGIN,
+                            ADMIN_PASSWORD
                         )
                     )
                 }
@@ -40,6 +37,10 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
                 }
             }
         }
+    }
+
+    override fun getUser(login: String): UserEntity? {
+        return roomDataSource.getUser(login)
     }
 
     override fun checkUser(login: String, password: String): Int {
@@ -60,9 +61,13 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
     override fun remindUserPassword(login: String) =
         roomDataSource.getUser(login)?.userPassword ?: "Логин \"${login}\" не зарегистрирован"
 
-    override fun registerNewUser(login: String, password: String): Int {
-        roomDataSource.insertNewUser(UserEntity(UUID.randomUUID().toString(), login, password))
-        return REQUEST_CODE_OK
+    override fun addNewUser(login: String, password: String): Int {
+        return if (getUser(login) == null) {
+            roomDataSource.insertNewUser(UserEntity(UUID.randomUUID().toString(), login, password))
+            REQUEST_CODE_OK
+        } else {
+            REQUEST_CODE_LOGIN_REGISTERED_YET
+        }
     }
 
     override fun getAllUsers(): List<UserDto> {

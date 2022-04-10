@@ -23,7 +23,7 @@ class LoginActivityPresenter : LoginActivityContract.LoginPresenter {
             when (userRepository.checkUser(login, password)) {
                 REQUEST_CODE_OK -> {
                     view.setLoginSuccess(login)
-                    if (login == "admin") {
+                    if (login == ADMIN_LOGIN) {
                         view.setAdminLoginSuccess()
                     }
                 }

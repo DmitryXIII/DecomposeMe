@@ -81,7 +81,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
             isVisible = true
             setOnClickListener {
                 binding.adminScroll.isVisible = true
-                binding.tvAdminUserList.text = loginPresenter.getUserList().toString()
+                loginPresenter.getUserList()
             }
         }
     }
@@ -100,6 +100,10 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
             adminGroup.isVisible = false
             loginGroup.isVisible = true
         }
+    }
+
+    override fun showUserList(text: String) {
+        binding.tvAdminUserList.text = text
     }
 
     override fun showRemindedPassword(remindedPassword: String) {

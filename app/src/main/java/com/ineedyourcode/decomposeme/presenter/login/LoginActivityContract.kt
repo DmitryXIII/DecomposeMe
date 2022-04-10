@@ -8,6 +8,7 @@ class LoginActivityContract {
         fun setAdminLoginSuccess()
         fun setLoginError(error: String)
         fun exitAccount()
+        fun showUserList(text: String)
         fun showRemindedPassword(remindedPassword: String)
         fun showProgress()
         fun hideProgress()
@@ -18,6 +19,6 @@ class LoginActivityContract {
         fun onLogin(login: String, password: String)
         fun onAccountExit()
         fun onPasswordRemind(login: String)
-        fun getUserList(): List<UserDto>
+        fun getUserList()
     }
 }

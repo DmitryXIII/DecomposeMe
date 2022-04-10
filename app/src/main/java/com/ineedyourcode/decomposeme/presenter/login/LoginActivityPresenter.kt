@@ -64,7 +64,20 @@ class LoginActivityPresenter : LoginActivityContract.LoginPresenter {
         }
     }
 
-    override fun getUserList(): List<UserDto> {
-        return userRepository.getAllUsers()
+    override fun getUserList() {
+        val mUserList = userRepository.getAllUsers()
+
+        if (mUserList.isNotEmpty()) {
+            val userList = StringBuilder()
+            for (user in mUserList) {
+                userList.append(user.userLogin)
+                userList.append(" : ")
+                userList.append(user.userPassword)
+                userList.append("\n")
+            }
+            view.showUserList(userList.toString())
+        } else {
+            view.showUserList((view as LoginActivity).getString(R.string.empty_text))
+        }
     }
 }

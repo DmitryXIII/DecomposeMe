@@ -2,9 +2,12 @@ package com.ineedyourcode.decomposeme.ui.registration
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.ineedyourcode.decomposeme.databinding.ActivityRegistrationBinding
 import com.ineedyourcode.decomposeme.domain.EXTRA_LOGIN_SUCCESS
 import com.ineedyourcode.decomposeme.presenter.registration.RegistrationActivityContract
@@ -48,7 +51,6 @@ class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.R
     }
 
     override fun setRegistrationSuccess(login: String) {
-        binding.root.hideKeyboard()
         startActivity(Intent(this, LoginActivity::class.java).apply {
             putExtra(EXTRA_LOGIN_SUCCESS, login)
         })
@@ -60,10 +62,13 @@ class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.R
     }
 
     override fun showProgress() {
-//        TODO("Not yet implemented")
+        binding.progressBar.apply {
+            isVisible = true
+            hideKeyboard()
+        }
     }
 
     override fun hideProgress() {
-//        TODO("Not yet implemented")
+        binding.progressBar.isVisible = false
     }
 }

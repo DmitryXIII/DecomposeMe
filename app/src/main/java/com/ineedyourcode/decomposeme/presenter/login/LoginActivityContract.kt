@@ -1,7 +1,5 @@
 package com.ineedyourcode.decomposeme.presenter.login
 
-import com.ineedyourcode.decomposeme.domain.UserDto
-
 class LoginActivityContract {
     interface LoginView {
         fun setLoginSuccess(login: String)

@@ -35,6 +35,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
 
             btnRegistration.setOnClickListener {
                 startActivity(registrationActivityIntent)
+                finish()
             }
 
             btnLogin.setOnClickListener {
@@ -109,15 +110,18 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
     override fun showRemindedPassword(remindedPassword: String) {
         binding.root.apply {
             hideKeyboard()
-            showSnack(getString(R.string.reminded_password, remindedPassword))
+            showSnack(remindedPassword)
         }
     }
 
     override fun showProgress() {
-//        TODO("Not yet implemented")
+        binding.progressBar.apply {
+            hideKeyboard()
+            isVisible = true
+        }
     }
 
     override fun hideProgress() {
-//        TODO("Not yet implemented")
+        binding.progressBar.isVisible = false
     }
 }

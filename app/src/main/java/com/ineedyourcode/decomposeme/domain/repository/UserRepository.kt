@@ -58,8 +58,13 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
         }
     }
 
-    override fun remindUserPassword(login: String) =
-        roomDataSource.getUser(login)?.userPassword ?: "Логин \"${login}\" не зарегистрирован"
+    override fun remindUserPassword(login: String) : String {
+        return if (roomDataSource.getUser(login)?.userPassword == null) {
+            "Логин \"${login}\" не зарегистрирован"
+        } else {
+            "Пароль: ${roomDataSource.getUser(login)?.userPassword}"
+        }
+    }
 
     override fun addNewUser(login: String, password: String): Int {
         return if (getUser(login) == null) {

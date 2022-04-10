@@ -1,15 +1,13 @@
 package com.ineedyourcode.decomposeme.presenter.login
 
 import com.ineedyourcode.decomposeme.R
-import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_INVALID_PASSWORD
-import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_LOGIN_NOT_REGISTERED
-import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_OK
-import com.ineedyourcode.decomposeme.domain.fakerepository.FakeUserRepository
-import com.ineedyourcode.decomposeme.domain.fakerepository.IFakeUserRepository
+import com.ineedyourcode.decomposeme.domain.*
+import com.ineedyourcode.decomposeme.domain.repository.IUserRepository
+import com.ineedyourcode.decomposeme.domain.repository.UserRepository
 import com.ineedyourcode.decomposeme.ui.login.LoginActivity
 
 class LoginActivityPresenter : LoginActivityContract.LoginPresenter {
-    private val userRepository: IFakeUserRepository = FakeUserRepository()
+    private val userRepository: IUserRepository = UserRepository(App.getUserDao())
 
     private lateinit var view: LoginActivityContract.LoginView
 
@@ -50,5 +48,13 @@ class LoginActivityPresenter : LoginActivityContract.LoginPresenter {
         } else {
             view.showRemindedPassword(userRepository.remindUserPassword(login))
         }
+    }
+
+    override fun getUserList() : Map<String, UserDto> {
+       return userRepository.getAllUsers()
+    }
+
+    override fun delUser(login: String) {
+        userRepository.deleteUser(login)
     }
 }

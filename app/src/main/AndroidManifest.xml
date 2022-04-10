@@ -3,6 +3,7 @@
     package="com.ineedyourcode.decomposeme">
 
     <application
+        android:name=".domain.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

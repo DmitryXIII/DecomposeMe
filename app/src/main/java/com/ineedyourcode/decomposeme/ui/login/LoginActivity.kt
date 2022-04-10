@@ -8,8 +8,8 @@ import com.ineedyourcode.decomposeme.databinding.ActivityLoginBinding
 import com.ineedyourcode.decomposeme.domain.EXTRA_LOGIN_SUCCESS
 import com.ineedyourcode.decomposeme.presenter.login.LoginActivityContract
 import com.ineedyourcode.decomposeme.presenter.login.LoginActivityPresenter
-import com.ineedyourcode.decomposeme.ui.extensions.hideKeyboard
-import com.ineedyourcode.decomposeme.ui.extensions.showSnack
+import com.ineedyourcode.decomposeme.ui.extentions.hideKeyboard
+import com.ineedyourcode.decomposeme.ui.extentions.showSnack
 import com.ineedyourcode.decomposeme.ui.registration.RegistrationActivity
 
 class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
@@ -27,7 +27,17 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
             binding.root.showSnack(getString(R.string.registration_success, registeredLogin))
         }
 
-        loginPresenter = LoginActivityPresenter().apply { onAttach(this@LoginActivity) }
+        loginPresenter = restorePresenter().apply { onAttach(this@LoginActivity) }
+
+        binding.btnGetUserList.setOnClickListener {
+            binding.tvUserList.text = loginPresenter.getUserList().toString()
+        }
+
+        binding.btnDeleteUser.setOnClickListener {
+            loginPresenter.delUser(binding.textEditLogin.text.toString())
+
+            binding.tvUserList.text = loginPresenter.getUserList().toString()
+        }
 
         binding.btnLogin.setOnClickListener {
             loginPresenter.onLogin(
@@ -43,6 +53,16 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         binding.btnForgotPassword.setOnClickListener {
             loginPresenter.onPasswordRemind(binding.textEditLogin.text.toString())
         }
+    }
+
+    private fun restorePresenter(): LoginActivityPresenter {
+        val presenter = lastCustomNonConfigurationInstance as? LoginActivityPresenter
+        return presenter ?: LoginActivityPresenter()
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onRetainCustomNonConfigurationInstance(): Any {
+        return loginPresenter
     }
 
     override fun setLoginSuccess(login: String) {

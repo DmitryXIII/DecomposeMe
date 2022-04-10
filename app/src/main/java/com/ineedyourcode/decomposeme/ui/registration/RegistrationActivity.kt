@@ -9,8 +9,8 @@ import com.ineedyourcode.decomposeme.databinding.ActivityRegistrationBinding
 import com.ineedyourcode.decomposeme.domain.EXTRA_LOGIN_SUCCESS
 import com.ineedyourcode.decomposeme.presenter.registration.RegistrationActivityContract
 import com.ineedyourcode.decomposeme.presenter.registration.RegistrationActivityPresenter
-import com.ineedyourcode.decomposeme.ui.extensions.hideKeyboard
-import com.ineedyourcode.decomposeme.ui.extensions.showSnack
+import com.ineedyourcode.decomposeme.ui.extentions.hideKeyboard
+import com.ineedyourcode.decomposeme.ui.extentions.showSnack
 import com.ineedyourcode.decomposeme.ui.login.LoginActivity
 
 class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.RegistrationView {

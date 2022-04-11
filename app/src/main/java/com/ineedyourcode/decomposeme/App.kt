@@ -1,4 +1,4 @@
-package com.ineedyourcode.decomposeme.domain
+package com.ineedyourcode.decomposeme
 
 import android.app.Application
 import androidx.room.Room

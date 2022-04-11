@@ -7,8 +7,6 @@ import androidx.core.view.isVisible
 import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.databinding.ActivityLoginBinding
 import com.ineedyourcode.decomposeme.domain.EXTRA_LOGIN_SUCCESS
-import com.ineedyourcode.decomposeme.presenter.login.LoginActivityContract
-import com.ineedyourcode.decomposeme.presenter.login.LoginActivityPresenter
 import com.ineedyourcode.decomposeme.ui.extentions.hideKeyboard
 import com.ineedyourcode.decomposeme.ui.extentions.showSnack
 import com.ineedyourcode.decomposeme.ui.registration.RegistrationActivity
@@ -29,6 +27,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
                 val registeredLogin = it
                 textEditLogin.setText(registeredLogin)
                 root.showSnack(getString(R.string.registration_success, registeredLogin))
+                intent.removeExtra(EXTRA_LOGIN_SUCCESS)
             }
 
             loginPresenter = restorePresenter().apply { onAttach(this@LoginActivity) }
@@ -123,5 +122,16 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
 
     override fun hideProgress() {
         binding.progressBar.isVisible = false
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent?.extras != null) {
+            if (intent.extras!!.containsKey(EXTRA_LOGIN_SUCCESS)) {
+                val registeredLogin = intent.extras!!.getString(EXTRA_LOGIN_SUCCESS)
+                binding.textEditLogin.setText(registeredLogin)
+                binding.root.showSnack(getString(R.string.registration_success, registeredLogin))
+            }
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.ineedyourcode.decomposeme.presenter.registration
+package com.ineedyourcode.decomposeme.ui.registration
 
 class RegistrationActivityContract {
     interface RegistrationView {

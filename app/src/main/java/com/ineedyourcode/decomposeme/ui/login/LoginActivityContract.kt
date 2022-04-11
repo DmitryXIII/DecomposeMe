@@ -1,4 +1,4 @@
-package com.ineedyourcode.decomposeme.presenter.login
+package com.ineedyourcode.decomposeme.ui.login
 
 class LoginActivityContract {
     interface LoginView {

@@ -1,12 +1,12 @@
-package com.ineedyourcode.decomposeme.presenter.login
+package com.ineedyourcode.decomposeme.ui.login
 
+import android.os.Handler
 import android.os.Looper
+import com.ineedyourcode.decomposeme.App
 import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.domain.*
 import com.ineedyourcode.decomposeme.domain.repository.IUserRepository
 import com.ineedyourcode.decomposeme.domain.repository.UserRepository
-import com.ineedyourcode.decomposeme.ui.login.LoginActivity
-import android.os.Handler
 
 class LoginActivityPresenter : LoginActivityContract.LoginPresenter {
     private val userRepository: IUserRepository = UserRepository(App.getUserDao())

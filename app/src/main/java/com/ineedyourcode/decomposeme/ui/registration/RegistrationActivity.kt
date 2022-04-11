@@ -2,16 +2,12 @@ package com.ineedyourcode.decomposeme.ui.registration
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.ineedyourcode.decomposeme.databinding.ActivityRegistrationBinding
 import com.ineedyourcode.decomposeme.domain.EXTRA_LOGIN_SUCCESS
-import com.ineedyourcode.decomposeme.presenter.registration.RegistrationActivityContract
-import com.ineedyourcode.decomposeme.presenter.registration.RegistrationActivityPresenter
 import com.ineedyourcode.decomposeme.ui.extentions.hideKeyboard
 import com.ineedyourcode.decomposeme.ui.extentions.showSnack
 import com.ineedyourcode.decomposeme.ui.login.LoginActivity

@@ -1,12 +1,14 @@
-package com.ineedyourcode.decomposeme.presenter.registration
+package com.ineedyourcode.decomposeme.ui.registration
 
 import android.os.Handler
 import android.os.Looper
+import com.ineedyourcode.decomposeme.App
 import com.ineedyourcode.decomposeme.R
-import com.ineedyourcode.decomposeme.domain.*
+import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_LOGIN_REGISTERED_YET
+import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_OK
+import com.ineedyourcode.decomposeme.domain.fakeDelay
 import com.ineedyourcode.decomposeme.domain.repository.IUserRepository
 import com.ineedyourcode.decomposeme.domain.repository.UserRepository
-import com.ineedyourcode.decomposeme.ui.registration.RegistrationActivity
 
 class RegistrationActivityPresenter : RegistrationActivityContract.RegistrationPresenter {
     private val userRepository: IUserRepository = UserRepository(App.getUserDao())

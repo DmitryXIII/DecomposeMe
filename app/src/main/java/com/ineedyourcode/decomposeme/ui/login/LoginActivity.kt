@@ -80,7 +80,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         binding.btnAdminUserList.apply {
             isVisible = true
             setOnClickListener {
-                binding.adminScroll.isVisible = true
+                binding.adminUserListScroll.isVisible = true
                 loginPresenter.getUserList()
             }
         }

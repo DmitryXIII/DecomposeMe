@@ -123,15 +123,4 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
     override fun hideProgress() {
         binding.progressBar.isVisible = false
     }
-
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        if (intent?.extras != null) {
-            if (intent.extras!!.containsKey(EXTRA_LOGIN_SUCCESS)) {
-                val registeredLogin = intent.extras!!.getString(EXTRA_LOGIN_SUCCESS)
-                binding.textEditLogin.setText(registeredLogin)
-                binding.root.showSnack(getString(R.string.registration_success, registeredLogin))
-            }
-        }
-    }
 }

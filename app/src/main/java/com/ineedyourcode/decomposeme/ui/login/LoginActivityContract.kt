@@ -5,7 +5,7 @@ class LoginActivityContract {
         fun setLoginSuccess(login: String)
         fun setAdminLoginSuccess()
         fun setLoginError(error: String)
-        fun exitAccount()
+        fun setLogout()
         fun showUserList(text: String)
         fun showRemindedPassword(remindedPassword: String)
         fun showProgress()
@@ -15,7 +15,7 @@ class LoginActivityContract {
     interface LoginPresenter {
         fun onAttach(mView: LoginView)
         fun onLogin(login: String, password: String)
-        fun onAccountExit()
+        fun onLogout()
         fun onPasswordRemind(login: String)
         fun getUserList()
     }

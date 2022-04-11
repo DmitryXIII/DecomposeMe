@@ -49,7 +49,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
             }
 
             logoutButton.setOnClickListener {
-                loginPresenter.onAccountExit()
+                loginPresenter.onLogout()
             }
         }
     }
@@ -93,7 +93,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         }
     }
 
-    override fun exitAccount() {
+    override fun setLogout() {
         with(binding) {
             helloUserTextView.text = getString(R.string.empty_text)
             authorizedGroup.isVisible = false

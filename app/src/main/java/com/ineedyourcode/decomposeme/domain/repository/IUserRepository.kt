@@ -5,7 +5,8 @@ import com.ineedyourcode.decomposeme.domain.db.UserEntity
 
 interface IUserRepository {
     fun getUser(login: String) : UserEntity?
-    fun checkUser(login: String, password: String) : Int
+    fun login(login: String, password: String) : Int
+    fun logout(login: String) : Int
     fun remindUserPassword(login: String) : String
     fun addNewUser(login: String, password: String) : Int
     fun getAllUsers() : List<UserDto>

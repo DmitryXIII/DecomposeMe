@@ -21,7 +21,8 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
                         UserEntity(
                             UUID.randomUUID().toString(),
                             ADMIN_LOGIN,
-                            ADMIN_PASSWORD
+                            ADMIN_PASSWORD,
+                            false
                         )
                     )
                 }
@@ -31,7 +32,8 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
                         UserEntity(
                             UUID.randomUUID().toString(),
                             "User_$i",
-                            "pass$i"
+                            "pass$i",
+                            false
                         )
                     )
                 }
@@ -43,7 +45,7 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
         return roomDataSource.getUser(login)
     }
 
-    override fun checkUser(login: String, password: String): Int {
+    override fun login(login: String, password: String): Int {
         val user = roomDataSource.getUser(login)
         return when {
             user == null -> {
@@ -53,6 +55,19 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
                 REQUEST_CODE_INVALID_PASSWORD
             }
             else -> {
+                roomDataSource.userLogin(login)
+                REQUEST_CODE_OK
+            }
+        }
+    }
+
+    override fun logout(login: String): Int {
+        return when (roomDataSource.getUser(login)) {
+            null -> {
+                REQUEST_CODE_LOGIN_NOT_REGISTERED
+            }
+            else -> {
+                roomDataSource.userLogout(login)
                 REQUEST_CODE_OK
             }
         }
@@ -68,7 +83,7 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
 
     override fun addNewUser(login: String, password: String): Int {
         return if (getUser(login) == null) {
-            roomDataSource.insertNewUser(UserEntity(UUID.randomUUID().toString(), login, password))
+            roomDataSource.insertNewUser(UserEntity(UUID.randomUUID().toString(), login, password, false))
             REQUEST_CODE_OK
         } else {
             REQUEST_CODE_LOGIN_REGISTERED_YET
@@ -79,7 +94,7 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
         val mUserList = mutableListOf<UserDto>()
 
         for (mUser in roomDataSource.getAllUsers()) {
-            val user = UserDto(mUser.userId, mUser.userLogin, mUser.userPassword)
+            val user = UserDto(mUser.userId, mUser.userLogin, mUser.userPassword, mUser.isAuthorized)
             mUserList.add(user)
         }
         return mUserList

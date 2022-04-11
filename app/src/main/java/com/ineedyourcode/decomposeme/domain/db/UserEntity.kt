@@ -8,5 +8,6 @@ data class UserEntity(
     @PrimaryKey
     val userId: String,
     val userLogin: String,
-    val userPassword: String
+    val userPassword: String,
+    val isAuthorized: Boolean
 )

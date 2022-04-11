@@ -17,6 +17,15 @@ class LoginActivityPresenter : LoginActivityContract.LoginPresenter {
 
     override fun onAttach(mView: LoginActivityContract.LoginView) {
         view = mView
+
+        for (user in userRepository.getAllUsers()) {
+            if (user.isAuthorized) {
+                isLoginSuccess = true
+                currentLogin = user.userLogin
+                break
+            }
+        }
+
         if (isLoginSuccess) {
             view.setLoginSuccess(currentLogin)
             if (currentLogin == ADMIN_LOGIN) {
@@ -31,7 +40,7 @@ class LoginActivityPresenter : LoginActivityContract.LoginPresenter {
         } else {
             view.showProgress()
             uiThread.postDelayed({
-                when (userRepository.checkUser(login, password)) {
+                when (userRepository.login(login, password)) {
                     REQUEST_CODE_OK -> {
                         view.hideProgress()
                         view.setLoginSuccess(login)
@@ -61,13 +70,27 @@ class LoginActivityPresenter : LoginActivityContract.LoginPresenter {
         }
     }
 
-    override fun onAccountExit() {
+    override fun onLogout() {
         view.showProgress()
         uiThread.postDelayed({
-            view.exitAccount()
-            isLoginSuccess = false
-            currentLogin = (view as LoginActivity).getString(R.string.empty_text)
-            view.hideProgress()
+            when(userRepository.logout(currentLogin)) {
+                REQUEST_CODE_LOGIN_NOT_REGISTERED -> {
+                    view.hideProgress()
+                    view.setLoginError(
+                        (view as LoginActivity).getString(
+                            R.string.login_not_registered,
+                            currentLogin
+                        )
+                    )
+                }
+
+                REQUEST_CODE_OK -> {
+                    view.setLogout()
+                    isLoginSuccess = false
+                    currentLogin = (view as LoginActivity).getString(R.string.empty_text)
+                    view.hideProgress()
+                }
+            }
         }, fakeDelay())
     }
 
@@ -94,6 +117,8 @@ class LoginActivityPresenter : LoginActivityContract.LoginPresenter {
                     userList.append(user.userLogin)
                     userList.append(" : ")
                     userList.append(user.userPassword)
+                    userList.append(" : ")
+                    userList.append(user.isAuthorized)
                     userList.append("\n")
                 }
                 view.showUserList(userList.toString())

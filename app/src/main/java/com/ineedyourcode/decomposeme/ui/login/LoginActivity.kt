@@ -25,30 +25,30 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         with(binding) {
             intent.getStringExtra(EXTRA_LOGIN_SUCCESS)?.let {
                 val registeredLogin = it
-                textEditLogin.setText(registeredLogin)
+                loginTextEdit.setText(registeredLogin)
                 root.showSnack(getString(R.string.registration_success, registeredLogin))
                 intent.removeExtra(EXTRA_LOGIN_SUCCESS)
             }
 
             loginPresenter = restorePresenter().apply { onAttach(this@LoginActivity) }
 
-            btnRegistration.setOnClickListener {
+            registrationButton.setOnClickListener {
                 startActivity(registrationActivityIntent)
                 finish()
             }
 
-            btnLogin.setOnClickListener {
+            loginButton.setOnClickListener {
                 loginPresenter.onLogin(
-                    textEditLogin.text.toString(),
-                    textEditPassword.text.toString()
+                    loginTextEdit.text.toString(),
+                    passwordTextEdit.text.toString()
                 )
             }
 
-            btnForgotPassword.setOnClickListener {
-                loginPresenter.onPasswordRemind(textEditLogin.text.toString())
+            forgotPasswordButton.setOnClickListener {
+                loginPresenter.onPasswordRemind(loginTextEdit.text.toString())
             }
 
-            btnAccountExit.setOnClickListener {
+            logoutButton.setOnClickListener {
                 loginPresenter.onAccountExit()
             }
         }
@@ -70,17 +70,17 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
             authorizedGroup.isVisible = true
             loginGroup.isVisible = false
             adminGroup.isVisible = false
-            tvHelloUser.text = getString(R.string.hello_user, login)
-            textEditLogin.text?.clear()
-            textEditPassword.text?.clear()
+            helloUserTextView.text = getString(R.string.hello_user, login)
+            loginTextEdit.text?.clear()
+            passwordTextEdit.text?.clear()
         }
     }
 
     override fun setAdminLoginSuccess() {
-        binding.btnAdminUserList.apply {
+        binding.adminUserListButton.apply {
             isVisible = true
             setOnClickListener {
-                binding.adminUserListScroll.isVisible = true
+                binding.adminUserListScrollView.isVisible = true
                 loginPresenter.getUserList()
             }
         }
@@ -95,15 +95,15 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
 
     override fun exitAccount() {
         with(binding) {
-            tvHelloUser.text = getString(R.string.empty_text)
+            helloUserTextView.text = getString(R.string.empty_text)
             authorizedGroup.isVisible = false
             adminGroup.isVisible = false
             loginGroup.isVisible = true
         }
     }
 
-    override fun showUserList(text: String) {
-        binding.tvAdminUserList.text = text
+    override fun showUserList(userList: String) {
+        binding.adminUserListTextView.text = userList
     }
 
     override fun showRemindedPassword(remindedPassword: String) {
@@ -129,7 +129,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         if (intent?.extras != null) {
             if (intent.extras!!.containsKey(EXTRA_LOGIN_SUCCESS)) {
                 val registeredLogin = intent.extras!!.getString(EXTRA_LOGIN_SUCCESS)
-                binding.textEditLogin.setText(registeredLogin)
+                binding.loginTextEdit.setText(registeredLogin)
                 binding.root.showSnack(getString(R.string.registration_success, registeredLogin))
             }
         }

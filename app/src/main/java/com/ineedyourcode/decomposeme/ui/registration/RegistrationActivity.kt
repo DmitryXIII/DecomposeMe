@@ -31,13 +31,13 @@ class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.R
                 override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
                 override fun afterTextChanged(enteredChars: Editable?) {
-                    if (enteredChars.toString() == textEditPassword.text.toString()) {
-                        btnRegistration.isEnabled = true
+                    if (enteredChars.toString() == passwordTextEdit.text.toString()) {
+                        registrationButton.isEnabled = true
                     }
                 }
             })
 
-            btnRegistration.setOnClickListener {
+            registrationButton.setOnClickListener {
                 registrationPresenter.onRegister(
                     textEditNewLogin.text.toString(),
                     textEditRepeatPassword.text.toString()

@@ -6,7 +6,7 @@ class LoginActivityContract {
         fun setAdminLoginSuccess()
         fun setLoginError(error: String)
         fun setLogout()
-        fun showUserList(text: String)
+        fun showUserList(userList: String)
         fun showRemindedPassword(remindedPassword: String)
         fun showProgress()
         fun hideProgress()

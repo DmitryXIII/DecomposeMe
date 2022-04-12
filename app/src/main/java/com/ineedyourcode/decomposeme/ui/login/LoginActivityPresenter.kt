@@ -2,14 +2,15 @@ package com.ineedyourcode.decomposeme.ui.login
 
 import android.os.Handler
 import android.os.Looper
-import com.ineedyourcode.decomposeme.App
 import com.ineedyourcode.decomposeme.R
-import com.ineedyourcode.decomposeme.domain.*
+import com.ineedyourcode.decomposeme.data.ADMIN_LOGIN
+import com.ineedyourcode.decomposeme.data.REQUEST_CODE_INVALID_PASSWORD
+import com.ineedyourcode.decomposeme.data.REQUEST_CODE_LOGIN_NOT_REGISTERED
+import com.ineedyourcode.decomposeme.data.REQUEST_CODE_OK
 import com.ineedyourcode.decomposeme.domain.repository.IUserLoginApi
-import com.ineedyourcode.decomposeme.data.MockUserLoginApi
 
-class LoginActivityPresenter : LoginActivityContract.LoginPresenter {
-    private val userLoginApi: IUserLoginApi = MockUserLoginApi(App.getUserDao())
+class LoginActivityPresenter(private val userLoginApi: IUserLoginApi) :
+    LoginActivityContract.LoginPresenter {
     private var isLoginSuccess = false
     private val uiThread = Handler(Looper.getMainLooper())
     private lateinit var currentLogin: String
@@ -117,7 +118,6 @@ class LoginActivityPresenter : LoginActivityContract.LoginPresenter {
         Thread {
             uiThread.post {
                 val mUserList = userLoginApi.getAllUsers()
-
                 if (mUserList.isNotEmpty()) {
                     val userList = StringBuilder()
                     for (user in mUserList) {
@@ -129,11 +129,10 @@ class LoginActivityPresenter : LoginActivityContract.LoginPresenter {
                         userList.append("\n")
                     }
                     view.showUserList(userList.toString())
-                    view.hideProgress()
                 } else {
                     view.showUserList((view as LoginActivity).getString(R.string.empty_text))
-                    view.hideProgress()
                 }
+                view.hideProgress()
             }
         }.start()
     }

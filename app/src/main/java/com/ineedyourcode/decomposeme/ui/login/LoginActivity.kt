@@ -4,9 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.ineedyourcode.decomposeme.App
 import com.ineedyourcode.decomposeme.R
+import com.ineedyourcode.decomposeme.data.EXTRA_LOGIN_SUCCESS
 import com.ineedyourcode.decomposeme.databinding.ActivityLoginBinding
-import com.ineedyourcode.decomposeme.domain.EXTRA_LOGIN_SUCCESS
 import com.ineedyourcode.decomposeme.ui.extentions.hideKeyboard
 import com.ineedyourcode.decomposeme.ui.extentions.showSnack
 import com.ineedyourcode.decomposeme.ui.registration.RegistrationActivity
@@ -56,7 +57,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
 
     private fun restorePresenter(): LoginActivityPresenter {
         val presenter = lastCustomNonConfigurationInstance as? LoginActivityPresenter
-        return presenter ?: LoginActivityPresenter()
+        return presenter ?: LoginActivityPresenter(App.userLoginApi)
     }
 
     @Deprecated("Deprecated in Java")
@@ -95,6 +96,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
     override fun setLogout() {
         with(binding) {
             helloUserTextView.text = getString(R.string.empty_text)
+            adminUserListTextView.text = getString(R.string.empty_text)
             authorizedGroup.isVisible = false
             adminGroup.isVisible = false
             loginGroup.isVisible = true

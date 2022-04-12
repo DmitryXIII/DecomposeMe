@@ -1,6 +1,5 @@
 package com.ineedyourcode.decomposeme.data
 
-import com.ineedyourcode.decomposeme.domain.*
 import com.ineedyourcode.decomposeme.domain.db.UserDao
 import com.ineedyourcode.decomposeme.domain.db.UserEntity
 import com.ineedyourcode.decomposeme.domain.repository.IUserLoginApi
@@ -96,15 +95,9 @@ class MockUserLoginApi(private val roomDataSource: UserDao) : IUserLoginApi {
         }
     }
 
-    override fun getAllUsers(): List<UserDto> {
+    override fun getAllUsers(): List<UserEntity> {
         Thread.sleep(fakeDelay())
-        val mUserList = mutableListOf<UserDto>()
-
-        for (mUser in roomDataSource.getAllUsers()) {
-            val user = UserDto(mUser.userId, mUser.userLogin, mUser.userPassword, mUser.isAuthorized)
-            mUserList.add(user)
-        }
-        return mUserList
+        return roomDataSource.getAllUsers()
     }
 
     override fun deleteUser(login: String): Int {

@@ -6,8 +6,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.ineedyourcode.decomposeme.App
+import com.ineedyourcode.decomposeme.data.EXTRA_LOGIN_SUCCESS
 import com.ineedyourcode.decomposeme.databinding.ActivityRegistrationBinding
-import com.ineedyourcode.decomposeme.domain.EXTRA_LOGIN_SUCCESS
 import com.ineedyourcode.decomposeme.ui.extentions.hideKeyboard
 import com.ineedyourcode.decomposeme.ui.extentions.showSnack
 import com.ineedyourcode.decomposeme.ui.login.LoginActivity
@@ -21,7 +22,7 @@ class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.R
         binding = ActivityRegistrationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        registrationPresenter = RegistrationActivityPresenter()
+        registrationPresenter = RegistrationActivityPresenter(App.userLoginApi)
         registrationPresenter.onAttach(this)
 
         with(binding) {

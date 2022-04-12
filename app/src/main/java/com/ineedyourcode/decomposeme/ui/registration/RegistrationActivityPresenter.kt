@@ -2,15 +2,12 @@ package com.ineedyourcode.decomposeme.ui.registration
 
 import android.os.Handler
 import android.os.Looper
-import com.ineedyourcode.decomposeme.App
 import com.ineedyourcode.decomposeme.R
-import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_LOGIN_REGISTERED_YET
-import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_OK
+import com.ineedyourcode.decomposeme.data.REQUEST_CODE_LOGIN_REGISTERED_YET
+import com.ineedyourcode.decomposeme.data.REQUEST_CODE_OK
 import com.ineedyourcode.decomposeme.domain.repository.IUserLoginApi
-import com.ineedyourcode.decomposeme.data.MockUserLoginApi
 
-class RegistrationActivityPresenter : RegistrationActivityContract.RegistrationPresenter {
-    private val userLoginApi: IUserLoginApi = MockUserLoginApi(App.getUserDao())
+class RegistrationActivityPresenter(private val userLoginApi: IUserLoginApi) : RegistrationActivityContract.RegistrationPresenter {
 
     private val uiThread = Handler(Looper.getMainLooper())
 

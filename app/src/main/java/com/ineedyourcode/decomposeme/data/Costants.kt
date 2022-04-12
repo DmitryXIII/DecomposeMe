@@ -1,4 +1,4 @@
-package com.ineedyourcode.decomposeme.domain
+package com.ineedyourcode.decomposeme.data
 
 const val REQUEST_CODE_OK = 200
 const val REQUEST_CODE_LOGIN_NOT_REGISTERED = 401

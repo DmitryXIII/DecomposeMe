@@ -1,8 +1,8 @@
 package com.ineedyourcode.decomposeme.data
 
+import com.ineedyourcode.decomposeme.domain.IUserDatabaseApi
 import com.ineedyourcode.decomposeme.domain.db.UserDao
 import com.ineedyourcode.decomposeme.domain.db.UserEntity
-import com.ineedyourcode.decomposeme.domain.IUserDatabaseApi
 import java.util.*
 
 class MockUserDatabaseApi(private val roomDataSource: UserDao) : IUserDatabaseApi {

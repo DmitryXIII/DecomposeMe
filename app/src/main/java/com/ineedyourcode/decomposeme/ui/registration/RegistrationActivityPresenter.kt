@@ -1,15 +1,12 @@
 package com.ineedyourcode.decomposeme.ui.registration
 
-import android.os.Handler
-import android.os.Looper
 import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.data.REQUEST_CODE_LOGIN_REGISTERED_YET
 import com.ineedyourcode.decomposeme.data.REQUEST_CODE_OK
-import com.ineedyourcode.decomposeme.domain.IUserDatabaseApi
+import com.ineedyourcode.decomposeme.domain.interactor.registration.IUserRegistrationInteractor
 
-class RegistrationActivityPresenter(private val userLoginApi: IUserDatabaseApi) : RegistrationActivityContract.RegistrationPresenter {
-
-    private val uiThread = Handler(Looper.getMainLooper())
+class RegistrationActivityPresenter(private val userRegistrationInteractor: IUserRegistrationInteractor) :
+    RegistrationActivityContract.RegistrationPresenter {
 
     private lateinit var view: RegistrationActivityContract.RegistrationView
 
@@ -22,25 +19,23 @@ class RegistrationActivityPresenter(private val userLoginApi: IUserDatabaseApi) 
             view.setRegistrationError((view as RegistrationActivity).getString(R.string.login_can_not_be_blank))
         } else {
             view.showProgress()
-            Thread {
-                uiThread.post {
-                    when (userLoginApi.addNewUser(login, password)) {
-                        REQUEST_CODE_OK -> {
-                            view.hideProgress()
-                            view.setRegistrationSuccess(login)
-                        }
-                        REQUEST_CODE_LOGIN_REGISTERED_YET -> {
-                            view.hideProgress()
-                            view.setRegistrationError(
-                                (view as RegistrationActivity).getString(
-                                    R.string.login_registered_yet,
-                                    login
-                                )
+            userRegistrationInteractor.addNewUser(login, password) { response ->
+                when (response) {
+                    REQUEST_CODE_OK -> {
+                        view.hideProgress()
+                        view.setRegistrationSuccess(login)
+                    }
+                    REQUEST_CODE_LOGIN_REGISTERED_YET -> {
+                        view.hideProgress()
+                        view.setRegistrationError(
+                            (view as RegistrationActivity).getString(
+                                R.string.login_registered_yet,
+                                login
                             )
-                        }
+                        )
                     }
                 }
-            }.start()
+            }
         }
     }
 }

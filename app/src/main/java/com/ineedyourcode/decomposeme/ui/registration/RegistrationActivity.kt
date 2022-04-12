@@ -22,7 +22,7 @@ class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.R
         binding = ActivityRegistrationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        registrationPresenter = RegistrationActivityPresenter(App.userDatabaseApi)
+        registrationPresenter = RegistrationActivityPresenter(App.userRegistrationInteractor)
         registrationPresenter.onAttach(this)
 
         with(binding) {

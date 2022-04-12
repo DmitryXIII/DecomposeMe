@@ -57,7 +57,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
 
     private fun restorePresenter(): LoginActivityPresenter {
         val presenter = lastCustomNonConfigurationInstance as? LoginActivityPresenter
-        return presenter ?: LoginActivityPresenter(App.USER_LOGIN_INTERACTOR)
+        return presenter ?: LoginActivityPresenter(App.userLoginInteractor)
     }
 
     @Deprecated("Deprecated in Java")

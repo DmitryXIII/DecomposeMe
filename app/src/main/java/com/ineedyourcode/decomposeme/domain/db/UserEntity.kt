@@ -9,5 +9,5 @@ data class UserEntity(
     val userId: String,
     val userLogin: String,
     val userPassword: String,
-    val isAuthorized: Boolean
+    val isAuthorized: Boolean = false
 )

@@ -5,9 +5,9 @@ import android.os.Looper
 import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.data.REQUEST_CODE_LOGIN_REGISTERED_YET
 import com.ineedyourcode.decomposeme.data.REQUEST_CODE_OK
-import com.ineedyourcode.decomposeme.domain.repository.IUserLoginApi
+import com.ineedyourcode.decomposeme.domain.IUserDatabaseApi
 
-class RegistrationActivityPresenter(private val userLoginApi: IUserLoginApi) : RegistrationActivityContract.RegistrationPresenter {
+class RegistrationActivityPresenter(private val userLoginApi: IUserDatabaseApi) : RegistrationActivityContract.RegistrationPresenter {
 
     private val uiThread = Handler(Looper.getMainLooper())
 

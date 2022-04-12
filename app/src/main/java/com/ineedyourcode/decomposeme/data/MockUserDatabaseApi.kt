@@ -2,10 +2,10 @@ package com.ineedyourcode.decomposeme.data
 
 import com.ineedyourcode.decomposeme.domain.db.UserDao
 import com.ineedyourcode.decomposeme.domain.db.UserEntity
-import com.ineedyourcode.decomposeme.domain.repository.IUserLoginApi
+import com.ineedyourcode.decomposeme.domain.IUserDatabaseApi
 import java.util.*
 
-class MockUserLoginApi(private val roomDataSource: UserDao) : IUserLoginApi {
+class MockUserDatabaseApi(private val roomDataSource: UserDao) : IUserDatabaseApi {
 
     init {
         if (roomDataSource.getAllUsers().isEmpty()) {
@@ -21,8 +21,7 @@ class MockUserLoginApi(private val roomDataSource: UserDao) : IUserLoginApi {
                         UserEntity(
                             UUID.randomUUID().toString(),
                             ADMIN_LOGIN,
-                            ADMIN_PASSWORD,
-                            false
+                            ADMIN_PASSWORD
                         )
                     )
                 }
@@ -32,8 +31,7 @@ class MockUserLoginApi(private val roomDataSource: UserDao) : IUserLoginApi {
                         UserEntity(
                             UUID.randomUUID().toString(),
                             "User_$i",
-                            "pass$i",
-                            false
+                            "pass$i"
                         )
                     )
                 }

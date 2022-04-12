@@ -1,11 +1,15 @@
 package com.ineedyourcode.decomposeme
 
 import android.app.Application
+import android.os.Handler
+import android.os.Looper
 import androidx.room.Room
-import com.ineedyourcode.decomposeme.data.MockUserLoginApi
+import com.ineedyourcode.decomposeme.data.MockUserDatabaseApi
+import com.ineedyourcode.decomposeme.data.MockUserLoginInteractor
 import com.ineedyourcode.decomposeme.domain.db.UserDao
 import com.ineedyourcode.decomposeme.domain.db.UserDb
-import com.ineedyourcode.decomposeme.domain.repository.IUserLoginApi
+import com.ineedyourcode.decomposeme.domain.IUserDatabaseApi
+import com.ineedyourcode.decomposeme.domain.interactor.login.IUserLoginInteractor
 
 class App : Application() {
 
@@ -15,7 +19,8 @@ class App : Application() {
     }
 
     companion object {
-        val userLoginApi: IUserLoginApi by lazy { MockUserLoginApi(getUserDao()) }
+        val userDatabaseApi: IUserDatabaseApi by lazy { MockUserDatabaseApi(getUserDao()) }
+        val USER_LOGIN_INTERACTOR: IUserLoginInteractor by lazy { MockUserLoginInteractor(userDatabaseApi, Handler(Looper.getMainLooper())) }
 
         private const val APP_DB_NAME = "Users.db"
         private var instance: App? = null

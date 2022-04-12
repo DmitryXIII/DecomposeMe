@@ -1,29 +1,28 @@
 package com.ineedyourcode.decomposeme.ui.login
 
-import android.os.Handler
-import android.os.Looper
 import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.data.ADMIN_LOGIN
 import com.ineedyourcode.decomposeme.data.REQUEST_CODE_INVALID_PASSWORD
 import com.ineedyourcode.decomposeme.data.REQUEST_CODE_LOGIN_NOT_REGISTERED
 import com.ineedyourcode.decomposeme.data.REQUEST_CODE_OK
-import com.ineedyourcode.decomposeme.domain.repository.IUserLoginApi
+import com.ineedyourcode.decomposeme.domain.interactor.login.IUserLoginInteractor
 
-class LoginActivityPresenter(private val userLoginApi: IUserLoginApi) :
+class LoginActivityPresenter(private val userLoginInteractor: IUserLoginInteractor) :
     LoginActivityContract.LoginPresenter {
     private var isLoginSuccess = false
-    private val uiThread = Handler(Looper.getMainLooper())
     private lateinit var currentLogin: String
     private lateinit var view: LoginActivityContract.LoginView
 
     override fun onAttach(mView: LoginActivityContract.LoginView) {
         view = mView
 
-        for (user in userLoginApi.getAllUsers()) {
-            if (user.isAuthorized) {
-                isLoginSuccess = true
-                currentLogin = user.userLogin
-                break
+        userLoginInteractor.getAllUsers { userList ->
+            for (user in userList) {
+                if (user.isAuthorized) {
+                    isLoginSuccess = true
+                    currentLogin = user.userLogin
+                    break
+                }
             }
         }
 
@@ -40,63 +39,59 @@ class LoginActivityPresenter(private val userLoginApi: IUserLoginApi) :
             view.setLoginError((view as LoginActivity).getString(R.string.login_can_not_be_blank))
         } else {
             view.showProgress()
-            Thread {
-                uiThread.post {
-                    when (userLoginApi.login(login, password)) {
-                        REQUEST_CODE_OK -> {
-                            view.hideProgress()
-                            view.setLoginSuccess(login)
-                            if (login == ADMIN_LOGIN) {
-                                view.setAdminLoginSuccess()
-                            }
-                            isLoginSuccess = true
-                            currentLogin = login
+            userLoginInteractor.login(login, password) { response ->
+                when (response) {
+                    REQUEST_CODE_OK -> {
+                        view.hideProgress()
+                        view.setLoginSuccess(login)
+                        if (login == ADMIN_LOGIN) {
+                            view.setAdminLoginSuccess()
                         }
-
-                        REQUEST_CODE_LOGIN_NOT_REGISTERED -> {
-                            view.hideProgress()
-                            view.setLoginError(
-                                (view as LoginActivity).getString(
-                                    R.string.login_not_registered,
-                                    login
-                                )
-                            )
-                        }
-
-                        REQUEST_CODE_INVALID_PASSWORD -> {
-                            view.hideProgress()
-                            view.setLoginError((view as LoginActivity).getString(R.string.invalid_password))
-                        }
+                        isLoginSuccess = true
+                        currentLogin = login
                     }
-                }
-            }.start()
-        }
-    }
 
-    override fun onLogout() {
-        view.showProgress()
-        Thread {
-            uiThread.post {
-                when (userLoginApi.logout(currentLogin)) {
                     REQUEST_CODE_LOGIN_NOT_REGISTERED -> {
                         view.hideProgress()
                         view.setLoginError(
                             (view as LoginActivity).getString(
                                 R.string.login_not_registered,
-                                currentLogin
+                                login
                             )
                         )
                     }
 
-                    REQUEST_CODE_OK -> {
-                        view.setLogout()
-                        isLoginSuccess = false
-                        currentLogin = (view as LoginActivity).getString(R.string.empty_text)
+                    REQUEST_CODE_INVALID_PASSWORD -> {
                         view.hideProgress()
+                        view.setLoginError((view as LoginActivity).getString(R.string.invalid_password))
                     }
                 }
             }
-        }.start()
+        }
+    }
+
+    override fun onLogout() {
+        view.showProgress()
+        userLoginInteractor.logout(currentLogin) { response ->
+            when (response) {
+                REQUEST_CODE_LOGIN_NOT_REGISTERED -> {
+                    view.hideProgress()
+                    view.setLoginError(
+                        (view as LoginActivity).getString(
+                            R.string.login_not_registered,
+                            currentLogin
+                        )
+                    )
+                }
+
+                REQUEST_CODE_OK -> {
+                    view.setLogout()
+                    isLoginSuccess = false
+                    currentLogin = (view as LoginActivity).getString(R.string.empty_text)
+                    view.hideProgress()
+                }
+            }
+        }
     }
 
     override fun onPasswordRemind(login: String) {
@@ -104,36 +99,32 @@ class LoginActivityPresenter(private val userLoginApi: IUserLoginApi) :
             view.setLoginError((view as LoginActivity).getString(R.string.login_can_not_be_blank))
         } else {
             view.showProgress()
-            Thread {
-                uiThread.post {
-                    view.showRemindedPassword(userLoginApi.remindUserPassword(login))
-                    view.hideProgress()
-                }
-            }.start()
+            userLoginInteractor.remindUserPassword(login) { response ->
+                view.showRemindedPassword(response)
+                view.hideProgress()
+            }
         }
     }
 
     override fun getUserList() {
         view.showProgress()
-        Thread {
-            uiThread.post {
-                val mUserList = userLoginApi.getAllUsers()
-                if (mUserList.isNotEmpty()) {
-                    val userList = StringBuilder()
-                    for (user in mUserList) {
-                        userList.append(user.userLogin)
-                        userList.append(" : ")
-                        userList.append(user.userPassword)
-                        userList.append(" : ")
-                        userList.append(user.isAuthorized)
-                        userList.append("\n")
-                    }
-                    view.showUserList(userList.toString())
-                } else {
-                    view.showUserList((view as LoginActivity).getString(R.string.empty_text))
+
+        userLoginInteractor.getAllUsers { mUserList ->
+            if (mUserList.isNotEmpty()) {
+                val userList = StringBuilder()
+                for (user in mUserList) {
+                    userList.append(user.userLogin)
+                    userList.append(" : ")
+                    userList.append(user.userPassword)
+                    userList.append(" : ")
+                    userList.append(user.isAuthorized)
+                    userList.append("\n")
                 }
-                view.hideProgress()
+                view.showUserList(userList.toString())
+            } else {
+                view.showUserList((view as LoginActivity).getString(R.string.empty_text))
             }
-        }.start()
+            view.hideProgress()
+        }
     }
 }

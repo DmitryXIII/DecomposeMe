@@ -6,12 +6,11 @@ import com.ineedyourcode.decomposeme.App
 import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_LOGIN_REGISTERED_YET
 import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_OK
-import com.ineedyourcode.decomposeme.domain.fakeDelay
-import com.ineedyourcode.decomposeme.domain.repository.IUserRepository
-import com.ineedyourcode.decomposeme.domain.repository.UserRepository
+import com.ineedyourcode.decomposeme.domain.repository.IUserLoginApi
+import com.ineedyourcode.decomposeme.data.MockUserLoginApi
 
 class RegistrationActivityPresenter : RegistrationActivityContract.RegistrationPresenter {
-    private val userRepository: IUserRepository = UserRepository(App.getUserDao())
+    private val userLoginApi: IUserLoginApi = MockUserLoginApi(App.getUserDao())
 
     private val uiThread = Handler(Looper.getMainLooper())
 
@@ -26,23 +25,25 @@ class RegistrationActivityPresenter : RegistrationActivityContract.RegistrationP
             view.setRegistrationError((view as RegistrationActivity).getString(R.string.login_can_not_be_blank))
         } else {
             view.showProgress()
-            uiThread.postDelayed({
-                when (userRepository.addNewUser(login, password)) {
-                    REQUEST_CODE_OK -> {
-                        view.hideProgress()
-                        view.setRegistrationSuccess(login)
-                    }
-                    REQUEST_CODE_LOGIN_REGISTERED_YET -> {
-                        view.hideProgress()
-                        view.setRegistrationError(
-                            (view as RegistrationActivity).getString(
-                                R.string.login_registered_yet,
-                                login
+            Thread {
+                uiThread.post {
+                    when (userLoginApi.addNewUser(login, password)) {
+                        REQUEST_CODE_OK -> {
+                            view.hideProgress()
+                            view.setRegistrationSuccess(login)
+                        }
+                        REQUEST_CODE_LOGIN_REGISTERED_YET -> {
+                            view.hideProgress()
+                            view.setRegistrationError(
+                                (view as RegistrationActivity).getString(
+                                    R.string.login_registered_yet,
+                                    login
+                                )
                             )
-                        )
+                        }
                     }
                 }
-            }, fakeDelay())
+            }.start()
         }
     }
 }

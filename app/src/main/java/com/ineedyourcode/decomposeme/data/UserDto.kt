@@ -1,4 +1,4 @@
-package com.ineedyourcode.decomposeme.domain
+package com.ineedyourcode.decomposeme.data
 
 data class UserDto(
     val userId: String,

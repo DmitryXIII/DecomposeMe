@@ -1,9 +1,9 @@
 package com.ineedyourcode.decomposeme.domain.repository
 
-import com.ineedyourcode.decomposeme.domain.UserDto
+import com.ineedyourcode.decomposeme.data.UserDto
 import com.ineedyourcode.decomposeme.domain.db.UserEntity
 
-interface IUserRepository {
+interface IUserLoginApi {
     fun getUser(login: String) : UserEntity?
     fun login(login: String, password: String) : Int
     fun logout(login: String) : Int

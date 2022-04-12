@@ -1,11 +1,12 @@
-package com.ineedyourcode.decomposeme.domain.repository
+package com.ineedyourcode.decomposeme.data
 
 import com.ineedyourcode.decomposeme.domain.*
 import com.ineedyourcode.decomposeme.domain.db.UserDao
 import com.ineedyourcode.decomposeme.domain.db.UserEntity
+import com.ineedyourcode.decomposeme.domain.repository.IUserLoginApi
 import java.util.*
 
-class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
+class MockUserLoginApi(private val roomDataSource: UserDao) : IUserLoginApi {
 
     init {
         if (roomDataSource.getAllUsers().isEmpty()) {
@@ -42,10 +43,12 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
     }
 
     override fun getUser(login: String): UserEntity? {
+        Thread.sleep(fakeDelay())
         return roomDataSource.getUser(login)
     }
 
     override fun login(login: String, password: String): Int {
+        Thread.sleep(fakeDelay())
         val user = roomDataSource.getUser(login)
         return when {
             user == null -> {
@@ -62,6 +65,7 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
     }
 
     override fun logout(login: String): Int {
+        Thread.sleep(fakeDelay())
         return when (roomDataSource.getUser(login)) {
             null -> {
                 REQUEST_CODE_LOGIN_NOT_REGISTERED
@@ -74,6 +78,7 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
     }
 
     override fun remindUserPassword(login: String) : String {
+        Thread.sleep(fakeDelay())
         return if (roomDataSource.getUser(login)?.userPassword == null) {
             "Логин \"${login}\" не зарегистрирован"
         } else {
@@ -82,6 +87,7 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
     }
 
     override fun addNewUser(login: String, password: String): Int {
+        Thread.sleep(fakeDelay())
         return if (getUser(login) == null) {
             roomDataSource.insertNewUser(UserEntity(UUID.randomUUID().toString(), login, password, false))
             REQUEST_CODE_OK
@@ -91,6 +97,7 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
     }
 
     override fun getAllUsers(): List<UserDto> {
+        Thread.sleep(fakeDelay())
         val mUserList = mutableListOf<UserDto>()
 
         for (mUser in roomDataSource.getAllUsers()) {
@@ -101,6 +108,7 @@ class UserRepository(private val roomDataSource: UserDao) : IUserRepository {
     }
 
     override fun deleteUser(login: String): Int {
+        Thread.sleep(fakeDelay())
         return if (getUser(login) == null) {
             REQUEST_CODE_LOGIN_NOT_REGISTERED
         } else {

@@ -5,11 +5,44 @@ import com.ineedyourcode.decomposeme.data.*
 import com.ineedyourcode.decomposeme.data.db.UserDao
 import com.ineedyourcode.decomposeme.data.db.UserEntity
 import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
+import java.util.*
 
 class MockUserDatabaseRepository(
     private val roomDataSource: UserDao,
     private val uiHandler: Handler
 ) : IUserDatabaseRepository {
+
+    init {
+        if (roomDataSource.getAllUsers().isEmpty()) {
+            initDefaultUserDataBase()
+        }
+    }
+
+    private fun initDefaultUserDataBase() {
+        for (i in 0..9) {
+            when (i) {
+                0 -> {
+                    roomDataSource.createUser(
+                        UserEntity(
+                            UUID.randomUUID().toString(),
+                            ADMIN_LOGIN,
+                            ADMIN_PASSWORD
+                        )
+                    )
+                }
+
+                in 1..9 -> {
+                    roomDataSource.createUser(
+                        UserEntity(
+                            UUID.randomUUID().toString(),
+                            "User_$i",
+                            "pass$i"
+                        )
+                    )
+                }
+            }
+        }
+    }
 
     override fun addUser(login: String, password: String, callback: (Int) -> Unit) {
         Thread {

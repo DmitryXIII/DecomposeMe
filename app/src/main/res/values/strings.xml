@@ -15,6 +15,6 @@
     <string name="reminded_password">Пароль: %1$s</string>
     <string name="enter_account">Вход в аккаунт</string>
     <string name="btn_account_exit">Выйти</string>
-    <string name="btn_admin_user_list">Показать скисок пользователей</string>
+    <string name="btn_admin_user_list">Показать список пользователей</string>
     <string name="empty_text">""</string>
 </resources>

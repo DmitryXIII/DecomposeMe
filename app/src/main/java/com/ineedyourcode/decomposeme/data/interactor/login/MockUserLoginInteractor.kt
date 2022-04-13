@@ -1,4 +1,4 @@
-package com.ineedyourcode.decomposeme.data.interacror.login
+package com.ineedyourcode.decomposeme.data.interactor.login
 
 import android.os.Handler
 import com.ineedyourcode.decomposeme.domain.api.IUserDatabaseApi

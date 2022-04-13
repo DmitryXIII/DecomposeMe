@@ -16,7 +16,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
     private lateinit var loginPresenter: LoginActivityPresenter
 
     companion object {
-        const val EXTRA_LOGIN_SUCCESS = "EXTRA_LOGIN_SUCCESS"
+        const val EXTRA_LOGIN_REGISTRATION_SUCCESS = "EXTRA_LOGIN_SUCCESS"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,11 +27,11 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         val registrationActivityIntent = Intent(this, RegistrationActivity::class.java)
 
         with(binding) {
-            intent.getStringExtra(EXTRA_LOGIN_SUCCESS)?.let {
+            intent.getStringExtra(EXTRA_LOGIN_REGISTRATION_SUCCESS)?.let {
                 val registeredLogin = it
                 loginTextEdit.setText(registeredLogin)
                 root.showSnack(getString(R.string.registration_success, registeredLogin))
-                intent.removeExtra(EXTRA_LOGIN_SUCCESS)
+                intent.removeExtra(EXTRA_LOGIN_REGISTRATION_SUCCESS)
             }
 
             loginPresenter = restorePresenter().apply { onAttach(this@LoginActivity) }

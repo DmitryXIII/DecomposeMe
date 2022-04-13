@@ -21,7 +21,7 @@ class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.R
         binding = ActivityRegistrationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        registrationPresenter = RegistrationActivityPresenter(App.userRepository)
+        registrationPresenter = RegistrationActivityPresenter(App.userRegistrationInteractor)
         registrationPresenter.onAttach(this)
 
         with(binding) {
@@ -48,7 +48,7 @@ class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.R
 
     override fun setRegistrationSuccess(login: String) {
         startActivity(Intent(this, LoginActivity::class.java).apply {
-            putExtra(LoginActivity.EXTRA_LOGIN_SUCCESS, login)
+            putExtra(LoginActivity.EXTRA_LOGIN_REGISTRATION_SUCCESS, login)
         })
         finish()
     }

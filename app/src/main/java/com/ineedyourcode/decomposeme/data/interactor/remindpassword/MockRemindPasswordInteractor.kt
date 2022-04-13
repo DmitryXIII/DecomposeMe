@@ -1,4 +1,4 @@
-package com.ineedyourcode.decomposeme.data.interacror.remindpassword
+package com.ineedyourcode.decomposeme.data.interactor.remindpassword
 
 import android.os.Handler
 import com.ineedyourcode.decomposeme.domain.api.IUserDatabaseApi

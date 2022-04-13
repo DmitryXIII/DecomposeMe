@@ -1,10 +1,10 @@
 package com.ineedyourcode.decomposeme.ui.registration
 
 import com.ineedyourcode.decomposeme.R
-import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
+import com.ineedyourcode.decomposeme.domain.interactor.registration.IUserRegistrationInteractor
 import com.ineedyourcode.decomposeme.ui.resourses.ResponseCodes
 
-class RegistrationActivityPresenter(private val userRepository: IUserDatabaseRepository) :
+class RegistrationActivityPresenter(private val userRegistrationInteractor: IUserRegistrationInteractor) :
     RegistrationActivityContract.RegistrationPresenter {
 
     private lateinit var view: RegistrationActivityContract.RegistrationView
@@ -18,7 +18,7 @@ class RegistrationActivityPresenter(private val userRepository: IUserDatabaseRep
             view.setRegistrationError((view as RegistrationActivity).getString(R.string.login_can_not_be_blank))
         } else {
             view.showProgress()
-            userRepository.addUser(login, password) { response ->
+            userRegistrationInteractor.userRegistration(login, password) { response ->
                 when (response) {
                     ResponseCodes.RESPONSE_SUCCESS.code -> {
                         view.hideProgress()

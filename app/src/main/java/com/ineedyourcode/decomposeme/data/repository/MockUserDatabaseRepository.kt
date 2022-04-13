@@ -3,9 +3,8 @@ package com.ineedyourcode.decomposeme.data.repository
 import android.os.Handler
 import com.ineedyourcode.decomposeme.data.db.UserDao
 import com.ineedyourcode.decomposeme.data.db.UserEntity
-import com.ineedyourcode.decomposeme.data.resourses.MockUserDatabaseDefaultUsers
-import com.ineedyourcode.decomposeme.data.resourses.fakeDelay
-import com.ineedyourcode.decomposeme.data.resourses.MockUserDatabaseResponseCodes
+import com.ineedyourcode.decomposeme.data.utils.MockDatabaseConstants
+import com.ineedyourcode.decomposeme.data.utils.fakeDelay
 import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
 import java.util.*
 
@@ -27,8 +26,8 @@ class MockUserDatabaseRepository(
                     roomDataSource.createUser(
                         UserEntity(
                             UUID.randomUUID().toString(),
-                            MockUserDatabaseDefaultUsers.DEFAULT_ADMIN_LOGIN.value,
-                            MockUserDatabaseDefaultUsers.DEFAULT_ADMIN_PASSWORD.value
+                            MockDatabaseConstants.DefaultUsers.DEFAULT_ADMIN_LOGIN.value,
+                            MockDatabaseConstants.DefaultUsers.DEFAULT_ADMIN_PASSWORD.value
                         )
                     )
                 }
@@ -37,8 +36,8 @@ class MockUserDatabaseRepository(
                     roomDataSource.createUser(
                         UserEntity(
                             UUID.randomUUID().toString(),
-                            MockUserDatabaseDefaultUsers.DEFAULT_USER_LOGIN.value + i,
-                            MockUserDatabaseDefaultUsers.DEFAULT_USER_PASSWORD.value + i
+                            MockDatabaseConstants.DefaultUsers.DEFAULT_USER_LOGIN.value + i,
+                            MockDatabaseConstants.DefaultUsers.DEFAULT_USER_PASSWORD.value + i
                         )
                     )
                 }
@@ -58,9 +57,9 @@ class MockUserDatabaseRepository(
                                 userPassword = password
                             )
                         )
-                        MockUserDatabaseResponseCodes.RESPONSE_SUCCESS.code
+                        MockDatabaseConstants.ResponseCodes.RESPONSE_SUCCESS.code
                     } else {
-                        MockUserDatabaseResponseCodes.RESPONSE_LOGIN_REGISTERED_YET.code
+                        MockDatabaseConstants.ResponseCodes.RESPONSE_LOGIN_REGISTERED_YET.code
                     }
                 )
             }
@@ -99,10 +98,10 @@ class MockUserDatabaseRepository(
                 callback(
                     when (roomDataSource.getUser(newLogin)) {
                         null -> {
-                            MockUserDatabaseResponseCodes.RESPONSE_USER_UPDATE_FAILED.code
+                            MockDatabaseConstants.ResponseCodes.RESPONSE_USER_UPDATE_FAILED.code
                         }
                         else -> {
-                            MockUserDatabaseResponseCodes.RESPONSE_SUCCESS.code
+                            MockDatabaseConstants.ResponseCodes.RESPONSE_SUCCESS.code
                         }
                     }
                 )
@@ -117,16 +116,16 @@ class MockUserDatabaseRepository(
                 callback(
                     when (roomDataSource.getUser(login)) {
                         null -> {
-                            MockUserDatabaseResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code
+                            MockDatabaseConstants.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code
                         }
                         else -> {
                             roomDataSource.deleteUser(login)
                             when (roomDataSource.getUser(login)) {
                                 null -> {
-                                    MockUserDatabaseResponseCodes.RESPONSE_SUCCESS.code
+                                    MockDatabaseConstants.ResponseCodes.RESPONSE_SUCCESS.code
                                 }
                                 else -> {
-                                    MockUserDatabaseResponseCodes.RESPONSE_USER_DELETE_FAILED.code
+                                    MockDatabaseConstants.ResponseCodes.RESPONSE_USER_DELETE_FAILED.code
                                 }
                             }
                         }

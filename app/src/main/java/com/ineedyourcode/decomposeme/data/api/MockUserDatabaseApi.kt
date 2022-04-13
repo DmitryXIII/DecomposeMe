@@ -1,9 +1,8 @@
 package com.ineedyourcode.decomposeme.data.api
 
-import com.ineedyourcode.decomposeme.data.resourses.MockUserDatabaseResponseCodes
 import com.ineedyourcode.decomposeme.data.db.UserDao
-import com.ineedyourcode.decomposeme.data.resourses.fakeDelay
-import com.ineedyourcode.decomposeme.data.resourses.MockUserDatabaseStringResources
+import com.ineedyourcode.decomposeme.data.utils.MockDatabaseConstants
+import com.ineedyourcode.decomposeme.data.utils.fakeDelay
 import com.ineedyourcode.decomposeme.domain.api.IUserDatabaseApi
 
 class MockUserDatabaseApi(private val roomDataSource: UserDao) : IUserDatabaseApi {
@@ -13,14 +12,14 @@ class MockUserDatabaseApi(private val roomDataSource: UserDao) : IUserDatabaseAp
         val user = roomDataSource.getUser(login)
         return when {
             user == null -> {
-                MockUserDatabaseResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code
+                MockDatabaseConstants.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code
             }
             user.userPassword != password -> {
-                MockUserDatabaseResponseCodes.RESPONSE_INVALID_PASSWORD.code
+                MockDatabaseConstants.ResponseCodes.RESPONSE_INVALID_PASSWORD.code
             }
             else -> {
                 roomDataSource.userLogin(login)
-                MockUserDatabaseResponseCodes.RESPONSE_SUCCESS.code
+                MockDatabaseConstants.ResponseCodes.RESPONSE_SUCCESS.code
             }
         }
     }
@@ -29,11 +28,11 @@ class MockUserDatabaseApi(private val roomDataSource: UserDao) : IUserDatabaseAp
         Thread.sleep(fakeDelay())
         return when (roomDataSource.getUser(login)) {
             null -> {
-                MockUserDatabaseResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code
+                MockDatabaseConstants.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code
             }
             else -> {
                 roomDataSource.userLogout(login)
-                MockUserDatabaseResponseCodes.RESPONSE_SUCCESS.code
+                MockDatabaseConstants.ResponseCodes.RESPONSE_SUCCESS.code
             }
         }
     }
@@ -41,9 +40,9 @@ class MockUserDatabaseApi(private val roomDataSource: UserDao) : IUserDatabaseAp
     override fun remindUserPassword(login: String): String {
         Thread.sleep(fakeDelay())
         return if (roomDataSource.getUser(login)?.userPassword == null) {
-            MockUserDatabaseStringResources.MESSAGE_LOGIN_NOT_REGISTERED.value
+            MockDatabaseConstants.StringResources.MESSAGE_LOGIN_NOT_REGISTERED.value
         } else {
-            MockUserDatabaseStringResources
+            MockDatabaseConstants.StringResources
                 .MESSAGE_YOUR_PASSWORD_IS.value + roomDataSource.getUser(login)?.userPassword
         }
     }

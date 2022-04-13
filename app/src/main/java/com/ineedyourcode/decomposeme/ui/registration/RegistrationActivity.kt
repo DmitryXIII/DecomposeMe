@@ -8,8 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.ineedyourcode.decomposeme.App
 import com.ineedyourcode.decomposeme.databinding.ActivityRegistrationBinding
-import com.ineedyourcode.decomposeme.ui.extentions.hideKeyboard
-import com.ineedyourcode.decomposeme.ui.extentions.showSnack
+import com.ineedyourcode.decomposeme.ui.uiutils.hideKeyboard
+import com.ineedyourcode.decomposeme.ui.uiutils.showSnack
 import com.ineedyourcode.decomposeme.ui.login.LoginActivity
 
 class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.RegistrationView {

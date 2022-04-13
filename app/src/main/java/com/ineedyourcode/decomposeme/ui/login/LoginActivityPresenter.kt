@@ -4,8 +4,7 @@ import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.domain.interactor.login.IUserLoginInteractor
 import com.ineedyourcode.decomposeme.domain.interactor.remindpassword.IRemindPasswordInteractor
 import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
-import com.ineedyourcode.decomposeme.ui.resourses.DefaultUsersParams
-import com.ineedyourcode.decomposeme.ui.resourses.ResponseCodes
+import com.ineedyourcode.decomposeme.ui.uiutils.UiConstants
 
 class LoginActivityPresenter(
     private val userRepository: IUserDatabaseRepository,
@@ -19,7 +18,6 @@ class LoginActivityPresenter(
     private lateinit var currentLogin: String
     private lateinit var view: LoginActivityContract.LoginView
 
-
     // Задача onAttach: при открытии приложения реализовать проверку - есть ли авторизованный пользователь.
     // флаг isFirstAttach - для проверки, активити создается при открытии приложения, или активити восстановлена
     // после поворота экрана и т.д.
@@ -27,12 +25,7 @@ class LoginActivityPresenter(
         view = mView
 
         if (!isFirstAttach) {
-            if (isLoginSuccess) {
-                view.setLoginSuccess(currentLogin)
-                if (currentLogin == DefaultUsersParams.DEFAULT_ADMIN_LOGIN.value) {
-                    view.setAdminLoginSuccess()
-                }
-            }
+            checkIsLoginSuccess()
         } else {
             view.showProgress()
             userRepository.getAllUsers { userList ->
@@ -43,15 +36,19 @@ class LoginActivityPresenter(
                         break
                     }
                 }
-                if (isLoginSuccess) {
-                    view.setLoginSuccess(currentLogin)
-                    if (currentLogin == DefaultUsersParams.DEFAULT_ADMIN_LOGIN.value) {
-                        view.setAdminLoginSuccess()
-                    }
-                }
+                checkIsLoginSuccess()
                 view.hideProgress()
             }
             isFirstAttach = false
+        }
+    }
+
+    private fun checkIsLoginSuccess() {
+        if (isLoginSuccess) {
+            view.setLoginSuccess(currentLogin)
+            if (currentLogin == UiConstants.DefaultUsersParams.DEFAULT_ADMIN_LOGIN.value) {
+                view.setAdminLoginSuccess()
+            }
         }
     }
 
@@ -62,17 +59,17 @@ class LoginActivityPresenter(
             view.showProgress()
             userLoginInteractor.login(login, password) { response ->
                 when (response) {
-                    ResponseCodes.RESPONSE_SUCCESS.code -> {
+                    UiConstants.ResponseCodes.RESPONSE_SUCCESS.code -> {
                         view.hideProgress()
                         view.setLoginSuccess(login)
-                        if (login == DefaultUsersParams.DEFAULT_ADMIN_LOGIN.value) {
+                        if (login == UiConstants.DefaultUsersParams.DEFAULT_ADMIN_LOGIN.value) {
                             view.setAdminLoginSuccess()
                         }
                         isLoginSuccess = true
                         currentLogin = login
                     }
 
-                    ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
+                    UiConstants.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
                         view.hideProgress()
                         view.setLoginError(
                             (view as LoginActivity).getString(
@@ -82,7 +79,7 @@ class LoginActivityPresenter(
                         )
                     }
 
-                    ResponseCodes.RESPONSE_INVALID_PASSWORD.code -> {
+                    UiConstants.ResponseCodes.RESPONSE_INVALID_PASSWORD.code -> {
                         view.hideProgress()
                         view.setLoginError((view as LoginActivity).getString(R.string.invalid_password))
                     }
@@ -95,7 +92,7 @@ class LoginActivityPresenter(
         view.showProgress()
         userLoginInteractor.logout(currentLogin) { response ->
             when (response) {
-                ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
+                UiConstants.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
                     view.hideProgress()
                     view.setLoginError(
                         (view as LoginActivity).getString(
@@ -105,7 +102,7 @@ class LoginActivityPresenter(
                     )
                 }
 
-                ResponseCodes.RESPONSE_SUCCESS.code -> {
+                UiConstants.ResponseCodes.RESPONSE_SUCCESS.code -> {
                     view.setLogout()
                     isLoginSuccess = false
                     currentLogin = (view as LoginActivity).getString(R.string.empty_text)

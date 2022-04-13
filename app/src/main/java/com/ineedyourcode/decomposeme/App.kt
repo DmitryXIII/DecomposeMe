@@ -26,22 +26,25 @@ class App : Application() {
 
     companion object {
         private val uiHandler = Handler(Looper.getMainLooper())
-        private val userDatabaseApi: IUserDatabaseApi by lazy { MockUserDatabaseApi(getUserDao()) }
+
+        private val userDatabaseApi: IUserDatabaseApi by lazy {
+            MockUserDatabaseApi(getUserDao())
+        }
+
         val userRepository: IUserDatabaseRepository by lazy {
-            MockUserDatabaseRepository(getUserDao(),
-                uiHandler)
+            MockUserDatabaseRepository(getUserDao(), uiHandler)
         }
+
         val userLoginInteractor: IUserLoginInteractor by lazy {
-            MockUserLoginInteractor(userDatabaseApi,
-                uiHandler)
+            MockUserLoginInteractor(userDatabaseApi, uiHandler)
         }
+
         val userRemindPasswordInteractor: IRemindPasswordInteractor by lazy {
-            MockRemindPasswordInteractor(userDatabaseApi,
-                uiHandler)
+            MockRemindPasswordInteractor(userDatabaseApi, uiHandler)
         }
+
         val userRegistrationInteractor: IUserRegistrationInteractor by lazy {
-            MockUserRegistrationInteractor(
-                userRepository)
+            MockUserRegistrationInteractor(userRepository)
         }
 
         private const val APP_DB_NAME = "Users.db"

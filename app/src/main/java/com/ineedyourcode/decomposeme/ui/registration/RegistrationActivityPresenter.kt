@@ -2,7 +2,7 @@ package com.ineedyourcode.decomposeme.ui.registration
 
 import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.domain.interactor.registration.IUserRegistrationInteractor
-import com.ineedyourcode.decomposeme.ui.resourses.ResponseCodes
+import com.ineedyourcode.decomposeme.ui.uiutils.UiConstants
 
 class RegistrationActivityPresenter(private val userRegistrationInteractor: IUserRegistrationInteractor) :
     RegistrationActivityContract.RegistrationPresenter {
@@ -20,11 +20,11 @@ class RegistrationActivityPresenter(private val userRegistrationInteractor: IUse
             view.showProgress()
             userRegistrationInteractor.userRegistration(login, password) { response ->
                 when (response) {
-                    ResponseCodes.RESPONSE_SUCCESS.code -> {
+                    UiConstants.ResponseCodes.RESPONSE_SUCCESS.code -> {
                         view.hideProgress()
                         view.setRegistrationSuccess(login)
                     }
-                    ResponseCodes.RESPONSE_LOGIN_REGISTERED_YET.code -> {
+                    UiConstants.ResponseCodes.RESPONSE_LOGIN_REGISTERED_YET.code -> {
                         view.hideProgress()
                         view.setRegistrationError(
                             (view as RegistrationActivity).getString(

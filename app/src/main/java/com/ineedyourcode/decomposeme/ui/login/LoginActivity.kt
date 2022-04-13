@@ -7,8 +7,8 @@ import androidx.core.view.isVisible
 import com.ineedyourcode.decomposeme.App
 import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.databinding.ActivityLoginBinding
-import com.ineedyourcode.decomposeme.ui.extentions.hideKeyboard
-import com.ineedyourcode.decomposeme.ui.extentions.showSnack
+import com.ineedyourcode.decomposeme.ui.uiutils.hideKeyboard
+import com.ineedyourcode.decomposeme.ui.uiutils.showSnack
 import com.ineedyourcode.decomposeme.ui.registration.RegistrationActivity
 
 class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {

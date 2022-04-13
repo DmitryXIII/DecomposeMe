@@ -1,4 +1,4 @@
-package com.ineedyourcode.decomposeme.domain.db
+package com.ineedyourcode.decomposeme.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

@@ -1,4 +1,4 @@
-package com.ineedyourcode.decomposeme.domain.db
+package com.ineedyourcode.decomposeme.data.db
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -7,22 +7,24 @@ import androidx.room.Query
 
 @Dao
 interface UserDao {
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    fun createUser(entity: UserEntity)
 
     @Query("SELECT * FROM UserEntity WHERE userLogin =:login")
-    fun getUser(login: String) : UserEntity?
+    fun getUser(login: String): UserEntity?
 
     @Query("SELECT * FROM UserEntity")
     fun getAllUsers(): List<UserEntity>
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
-    fun insertNewUser(entity: UserEntity)
+    @Query("UPDATE UserEntity SET userLogin = :newLogin, userPassword = :newPassword, isAuthorized = :isAuthorized WHERE userLogin =:userId")
+    fun updateUser(userId: String, newLogin: String, newPassword: String, isAuthorized: Boolean)
+
+    @Query("DELETE FROM UserEntity WHERE userLogin == :login")
+    fun deleteUser(login: String)
 
     @Query("UPDATE UserEntity SET isAuthorized = :isAuthorized WHERE userLogin =:login")
     fun userLogin(login: String, isAuthorized: Boolean = true)
 
     @Query("UPDATE UserEntity SET isAuthorized = :isAuthorized WHERE userLogin =:login")
     fun userLogout(login: String, isAuthorized: Boolean = false)
-
-    @Query("DELETE FROM UserEntity WHERE userLogin == :login")
-    fun deleteUser(login: String)
 }

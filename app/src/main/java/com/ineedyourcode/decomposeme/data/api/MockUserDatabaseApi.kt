@@ -1,8 +1,9 @@
-package com.ineedyourcode.decomposeme.data
+package com.ineedyourcode.decomposeme.data.api
 
-import com.ineedyourcode.decomposeme.domain.IUserDatabaseApi
-import com.ineedyourcode.decomposeme.domain.db.UserDao
-import com.ineedyourcode.decomposeme.domain.db.UserEntity
+import com.ineedyourcode.decomposeme.data.*
+import com.ineedyourcode.decomposeme.domain.api.IUserDatabaseApi
+import com.ineedyourcode.decomposeme.data.db.UserDao
+import com.ineedyourcode.decomposeme.data.db.UserEntity
 import java.util.*
 
 class MockUserDatabaseApi(private val roomDataSource: UserDao) : IUserDatabaseApi {
@@ -17,7 +18,7 @@ class MockUserDatabaseApi(private val roomDataSource: UserDao) : IUserDatabaseAp
         for (i in 0..9) {
             when (i) {
                 0 -> {
-                    roomDataSource.insertNewUser(
+                    roomDataSource.createUser(
                         UserEntity(
                             UUID.randomUUID().toString(),
                             ADMIN_LOGIN,
@@ -27,7 +28,7 @@ class MockUserDatabaseApi(private val roomDataSource: UserDao) : IUserDatabaseAp
                 }
 
                 in 1..9 -> {
-                    roomDataSource.insertNewUser(
+                    roomDataSource.createUser(
                         UserEntity(
                             UUID.randomUUID().toString(),
                             "User_$i",
@@ -37,11 +38,6 @@ class MockUserDatabaseApi(private val roomDataSource: UserDao) : IUserDatabaseAp
                 }
             }
         }
-    }
-
-    override fun getUser(login: String): UserEntity? {
-        Thread.sleep(fakeDelay())
-        return roomDataSource.getUser(login)
     }
 
     override fun login(login: String, password: String): Int {
@@ -80,31 +76,6 @@ class MockUserDatabaseApi(private val roomDataSource: UserDao) : IUserDatabaseAp
             "Логин \"${login}\" не зарегистрирован"
         } else {
             "Пароль: ${roomDataSource.getUser(login)?.userPassword}"
-        }
-    }
-
-    override fun addNewUser(login: String, password: String): Int {
-        Thread.sleep(fakeDelay())
-        return if (getUser(login) == null) {
-            roomDataSource.insertNewUser(UserEntity(UUID.randomUUID().toString(), login, password, false))
-            REQUEST_CODE_OK
-        } else {
-            REQUEST_CODE_LOGIN_REGISTERED_YET
-        }
-    }
-
-    override fun getAllUsers(): List<UserEntity> {
-        Thread.sleep(fakeDelay())
-        return roomDataSource.getAllUsers()
-    }
-
-    override fun deleteUser(login: String): Int {
-        Thread.sleep(fakeDelay())
-        return if (getUser(login) == null) {
-            REQUEST_CODE_LOGIN_NOT_REGISTERED
-        } else {
-            roomDataSource.deleteUser(login)
-            REQUEST_CODE_OK
         }
     }
 }

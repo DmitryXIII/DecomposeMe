@@ -1,8 +1,7 @@
-package com.ineedyourcode.decomposeme.data
+package com.ineedyourcode.decomposeme.data.interacror.login
 
 import android.os.Handler
-import com.ineedyourcode.decomposeme.domain.IUserDatabaseApi
-import com.ineedyourcode.decomposeme.domain.db.UserEntity
+import com.ineedyourcode.decomposeme.domain.api.IUserDatabaseApi
 import com.ineedyourcode.decomposeme.domain.interactor.login.IUserLoginInteractor
 
 class MockUserLoginInteractor(
@@ -24,21 +23,4 @@ class MockUserLoginInteractor(
             }
         }.start()
     }
-
-    override fun remindUserPassword(login: String, callback: (String) -> Unit) {
-        Thread {
-            uiHandler.post {
-                callback(userDataBaseApi.remindUserPassword(login))
-            }
-        }.start()
-    }
-
-    override fun getAllUsers(callback: (List<UserEntity>) -> Unit) {
-        Thread {
-            uiHandler.post {
-                callback(userDataBaseApi.getAllUsers())
-            }
-        }.start()
-    }
-
 }

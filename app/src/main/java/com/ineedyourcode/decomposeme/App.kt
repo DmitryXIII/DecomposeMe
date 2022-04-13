@@ -4,14 +4,16 @@ import android.app.Application
 import android.os.Handler
 import android.os.Looper
 import androidx.room.Room
-import com.ineedyourcode.decomposeme.data.MockUserDatabaseApi
-import com.ineedyourcode.decomposeme.data.MockUserLoginInteractor
-import com.ineedyourcode.decomposeme.data.MockUserRegistrationInteractor
-import com.ineedyourcode.decomposeme.domain.IUserDatabaseApi
-import com.ineedyourcode.decomposeme.domain.db.UserDao
-import com.ineedyourcode.decomposeme.domain.db.UserDb
+import com.ineedyourcode.decomposeme.data.api.MockUserDatabaseApi
+import com.ineedyourcode.decomposeme.data.interacror.login.MockUserLoginInteractor
+import com.ineedyourcode.decomposeme.data.interacror.remindpassword.MockRemindPasswordInteractor
+import com.ineedyourcode.decomposeme.domain.api.IUserDatabaseApi
+import com.ineedyourcode.decomposeme.data.db.UserDao
+import com.ineedyourcode.decomposeme.data.db.UserDb
+import com.ineedyourcode.decomposeme.data.repository.MockUserDatabaseRepository
 import com.ineedyourcode.decomposeme.domain.interactor.login.IUserLoginInteractor
-import com.ineedyourcode.decomposeme.domain.interactor.registration.IUserRegistrationInteractor
+import com.ineedyourcode.decomposeme.domain.interactor.remindpassword.IRemindPasswordInteractor
+import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
 
 class App : Application() {
 
@@ -21,9 +23,11 @@ class App : Application() {
     }
 
     companion object {
-        val userDatabaseApi: IUserDatabaseApi by lazy { MockUserDatabaseApi(getUserDao()) }
-        val userLoginInteractor: IUserLoginInteractor by lazy { MockUserLoginInteractor(userDatabaseApi, Handler(Looper.getMainLooper())) }
-        val userRegistrationInteractor: IUserRegistrationInteractor by lazy { MockUserRegistrationInteractor(userDatabaseApi, Handler(Looper.getMainLooper())) }
+        private val uiHandler = Handler(Looper.getMainLooper())
+        private val userDatabaseApi: IUserDatabaseApi by lazy { MockUserDatabaseApi(getUserDao()) }
+        val userRepository: IUserDatabaseRepository by lazy { MockUserDatabaseRepository(getUserDao(), uiHandler) }
+        val userLoginInteractor: IUserLoginInteractor by lazy { MockUserLoginInteractor(userDatabaseApi, uiHandler) }
+        val userRemindPasswordInteractor: IRemindPasswordInteractor by lazy { MockRemindPasswordInteractor(userDatabaseApi, uiHandler) }
 
         private const val APP_DB_NAME = "Users.db"
         private var instance: App? = null

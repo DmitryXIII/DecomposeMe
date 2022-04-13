@@ -3,9 +3,9 @@ package com.ineedyourcode.decomposeme.ui.registration
 import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.data.REQUEST_CODE_LOGIN_REGISTERED_YET
 import com.ineedyourcode.decomposeme.data.REQUEST_CODE_OK
-import com.ineedyourcode.decomposeme.domain.interactor.registration.IUserRegistrationInteractor
+import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
 
-class RegistrationActivityPresenter(private val userRegistrationInteractor: IUserRegistrationInteractor) :
+class RegistrationActivityPresenter(private val userRepository: IUserDatabaseRepository) :
     RegistrationActivityContract.RegistrationPresenter {
 
     private lateinit var view: RegistrationActivityContract.RegistrationView
@@ -19,7 +19,7 @@ class RegistrationActivityPresenter(private val userRegistrationInteractor: IUse
             view.setRegistrationError((view as RegistrationActivity).getString(R.string.login_can_not_be_blank))
         } else {
             view.showProgress()
-            userRegistrationInteractor.addNewUser(login, password) { response ->
+            userRepository.addUser(login, password) { response ->
                 when (response) {
                     REQUEST_CODE_OK -> {
                         view.hideProgress()

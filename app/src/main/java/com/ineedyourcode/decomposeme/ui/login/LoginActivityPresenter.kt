@@ -6,8 +6,14 @@ import com.ineedyourcode.decomposeme.data.REQUEST_CODE_INVALID_PASSWORD
 import com.ineedyourcode.decomposeme.data.REQUEST_CODE_LOGIN_NOT_REGISTERED
 import com.ineedyourcode.decomposeme.data.REQUEST_CODE_OK
 import com.ineedyourcode.decomposeme.domain.interactor.login.IUserLoginInteractor
+import com.ineedyourcode.decomposeme.domain.interactor.remindpassword.IRemindPasswordInteractor
+import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
 
-class LoginActivityPresenter(private val userLoginInteractor: IUserLoginInteractor) :
+class LoginActivityPresenter(
+    private val userRepository: IUserDatabaseRepository,
+    private val userLoginInteractor: IUserLoginInteractor,
+    private val userRemindPasswordInteractor: IRemindPasswordInteractor
+) :
     LoginActivityContract.LoginPresenter {
     private var isLoginSuccess = false
     private lateinit var currentLogin: String
@@ -16,12 +22,11 @@ class LoginActivityPresenter(private val userLoginInteractor: IUserLoginInteract
     override fun onAttach(mView: LoginActivityContract.LoginView) {
         view = mView
 
-        userLoginInteractor.getAllUsers { userList ->
+        userRepository.getAllUsers { userList ->
             for (user in userList) {
                 if (user.isAuthorized) {
                     isLoginSuccess = true
                     currentLogin = user.userLogin
-                    break
                 }
             }
         }
@@ -99,7 +104,7 @@ class LoginActivityPresenter(private val userLoginInteractor: IUserLoginInteract
             view.setLoginError((view as LoginActivity).getString(R.string.login_can_not_be_blank))
         } else {
             view.showProgress()
-            userLoginInteractor.remindUserPassword(login) { response ->
+            userRemindPasswordInteractor.remindUserPassword(login) { response ->
                 view.showRemindedPassword(response)
                 view.hideProgress()
             }
@@ -109,7 +114,7 @@ class LoginActivityPresenter(private val userLoginInteractor: IUserLoginInteract
     override fun getUserList() {
         view.showProgress()
 
-        userLoginInteractor.getAllUsers { mUserList ->
+        userRepository.getAllUsers { mUserList ->
             if (mUserList.isNotEmpty()) {
                 val userList = StringBuilder()
                 for (user in mUserList) {

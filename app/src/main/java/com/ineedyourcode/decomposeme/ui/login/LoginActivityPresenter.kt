@@ -12,30 +12,48 @@ import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
 class LoginActivityPresenter(
     private val userRepository: IUserDatabaseRepository,
     private val userLoginInteractor: IUserLoginInteractor,
-    private val userRemindPasswordInteractor: IRemindPasswordInteractor
+    private val userRemindPasswordInteractor: IRemindPasswordInteractor,
+    private var isFirstAttach: Boolean
 ) :
     LoginActivityContract.LoginPresenter {
+
     private var isLoginSuccess = false
     private lateinit var currentLogin: String
     private lateinit var view: LoginActivityContract.LoginView
 
+
+    // Задача onAttach: при открытии приложения реализовать проверку - есть ли авторизованный пользователь.
+    // флаг isFirstAttach - для проверки, активити создается при открытии приложения, или активити восстановлена
+    // после поворота экрана и т.д.
     override fun onAttach(mView: LoginActivityContract.LoginView) {
         view = mView
 
-        userRepository.getAllUsers { userList ->
-            for (user in userList) {
-                if (user.isAuthorized) {
-                    isLoginSuccess = true
-                    currentLogin = user.userLogin
+        if (!isFirstAttach) {
+            if (isLoginSuccess) {
+                view.setLoginSuccess(currentLogin)
+                if (currentLogin == ADMIN_LOGIN) {
+                    view.setAdminLoginSuccess()
                 }
             }
-        }
-
-        if (isLoginSuccess) {
-            view.setLoginSuccess(currentLogin)
-            if (currentLogin == ADMIN_LOGIN) {
-                view.setAdminLoginSuccess()
+        } else {
+            view.showProgress()
+            userRepository.getAllUsers { userList ->
+                for (user in userList) {
+                    if (user.isAuthorized) {
+                        isLoginSuccess = true
+                        currentLogin = user.userLogin
+                        break
+                    }
+                }
+                if (isLoginSuccess) {
+                    view.setLoginSuccess(currentLogin)
+                    if (currentLogin == ADMIN_LOGIN) {
+                        view.setAdminLoginSuccess()
+                    }
+                }
+                view.hideProgress()
             }
+            isFirstAttach = false
         }
     }
 

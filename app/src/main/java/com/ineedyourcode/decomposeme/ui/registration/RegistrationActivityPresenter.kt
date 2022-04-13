@@ -1,9 +1,8 @@
 package com.ineedyourcode.decomposeme.ui.registration
 
 import com.ineedyourcode.decomposeme.R
-import com.ineedyourcode.decomposeme.data.REQUEST_CODE_LOGIN_REGISTERED_YET
-import com.ineedyourcode.decomposeme.data.REQUEST_CODE_OK
 import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
+import com.ineedyourcode.decomposeme.ui.resourses.ResponseCodes
 
 class RegistrationActivityPresenter(private val userRepository: IUserDatabaseRepository) :
     RegistrationActivityContract.RegistrationPresenter {
@@ -21,11 +20,11 @@ class RegistrationActivityPresenter(private val userRepository: IUserDatabaseRep
             view.showProgress()
             userRepository.addUser(login, password) { response ->
                 when (response) {
-                    REQUEST_CODE_OK -> {
+                    ResponseCodes.RESPONSE_SUCCESS.code -> {
                         view.hideProgress()
                         view.setRegistrationSuccess(login)
                     }
-                    REQUEST_CODE_LOGIN_REGISTERED_YET -> {
+                    ResponseCodes.RESPONSE_LOGIN_REGISTERED_YET.code -> {
                         view.hideProgress()
                         view.setRegistrationError(
                             (view as RegistrationActivity).getString(

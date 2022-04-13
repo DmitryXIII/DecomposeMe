@@ -1,9 +1,11 @@
 package com.ineedyourcode.decomposeme.data.repository
 
 import android.os.Handler
-import com.ineedyourcode.decomposeme.data.*
 import com.ineedyourcode.decomposeme.data.db.UserDao
 import com.ineedyourcode.decomposeme.data.db.UserEntity
+import com.ineedyourcode.decomposeme.data.resourses.MockUserDatabaseDefaultUsers
+import com.ineedyourcode.decomposeme.data.resourses.fakeDelay
+import com.ineedyourcode.decomposeme.data.resourses.MockUserDatabaseResponseCodes
 import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
 import java.util.*
 
@@ -25,8 +27,8 @@ class MockUserDatabaseRepository(
                     roomDataSource.createUser(
                         UserEntity(
                             UUID.randomUUID().toString(),
-                            ADMIN_LOGIN,
-                            ADMIN_PASSWORD
+                            MockUserDatabaseDefaultUsers.DEFAULT_ADMIN_LOGIN.value,
+                            MockUserDatabaseDefaultUsers.DEFAULT_ADMIN_PASSWORD.value
                         )
                     )
                 }
@@ -35,8 +37,8 @@ class MockUserDatabaseRepository(
                     roomDataSource.createUser(
                         UserEntity(
                             UUID.randomUUID().toString(),
-                            "User_$i",
-                            "pass$i"
+                            MockUserDatabaseDefaultUsers.DEFAULT_USER_LOGIN.value + i,
+                            MockUserDatabaseDefaultUsers.DEFAULT_USER_PASSWORD.value + i
                         )
                     )
                 }
@@ -56,9 +58,9 @@ class MockUserDatabaseRepository(
                                 userPassword = password
                             )
                         )
-                        REQUEST_CODE_OK
+                        MockUserDatabaseResponseCodes.RESPONSE_SUCCESS.code
                     } else {
-                        REQUEST_CODE_LOGIN_REGISTERED_YET
+                        MockUserDatabaseResponseCodes.RESPONSE_LOGIN_REGISTERED_YET.code
                     }
                 )
             }
@@ -97,10 +99,10 @@ class MockUserDatabaseRepository(
                 callback(
                     when (roomDataSource.getUser(newLogin)) {
                         null -> {
-                            REQUEST_CODE_USER_UPDATE_FAILED
+                            MockUserDatabaseResponseCodes.RESPONSE_USER_UPDATE_FAILED.code
                         }
                         else -> {
-                            REQUEST_CODE_OK
+                            MockUserDatabaseResponseCodes.RESPONSE_SUCCESS.code
                         }
                     }
                 )
@@ -115,16 +117,16 @@ class MockUserDatabaseRepository(
                 callback(
                     when (roomDataSource.getUser(login)) {
                         null -> {
-                            REQUEST_CODE_LOGIN_NOT_REGISTERED
+                            MockUserDatabaseResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code
                         }
                         else -> {
                             roomDataSource.deleteUser(login)
                             when (roomDataSource.getUser(login)) {
                                 null -> {
-                                    REQUEST_CODE_OK
+                                    MockUserDatabaseResponseCodes.RESPONSE_SUCCESS.code
                                 }
                                 else -> {
-                                    REQUEST_CODE_USER_DELETE_FAILED
+                                    MockUserDatabaseResponseCodes.RESPONSE_USER_DELETE_FAILED.code
                                 }
                             }
                         }
@@ -132,6 +134,5 @@ class MockUserDatabaseRepository(
                 )
             }
         }.start()
-
     }
 }

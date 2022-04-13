@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.ineedyourcode.decomposeme.App
 import com.ineedyourcode.decomposeme.R
-import com.ineedyourcode.decomposeme.data.EXTRA_LOGIN_SUCCESS
 import com.ineedyourcode.decomposeme.databinding.ActivityLoginBinding
 import com.ineedyourcode.decomposeme.ui.extentions.hideKeyboard
 import com.ineedyourcode.decomposeme.ui.extentions.showSnack
@@ -15,6 +14,10 @@ import com.ineedyourcode.decomposeme.ui.registration.RegistrationActivity
 class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var loginPresenter: LoginActivityPresenter
+
+    companion object {
+        const val EXTRA_LOGIN_SUCCESS = "EXTRA_LOGIN_SUCCESS"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

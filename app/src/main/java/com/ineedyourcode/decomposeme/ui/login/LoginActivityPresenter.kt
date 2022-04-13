@@ -1,13 +1,11 @@
 package com.ineedyourcode.decomposeme.ui.login
 
 import com.ineedyourcode.decomposeme.R
-import com.ineedyourcode.decomposeme.data.ADMIN_LOGIN
-import com.ineedyourcode.decomposeme.data.REQUEST_CODE_INVALID_PASSWORD
-import com.ineedyourcode.decomposeme.data.REQUEST_CODE_LOGIN_NOT_REGISTERED
-import com.ineedyourcode.decomposeme.data.REQUEST_CODE_OK
 import com.ineedyourcode.decomposeme.domain.interactor.login.IUserLoginInteractor
 import com.ineedyourcode.decomposeme.domain.interactor.remindpassword.IRemindPasswordInteractor
 import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
+import com.ineedyourcode.decomposeme.ui.resourses.DefaultUsersParams
+import com.ineedyourcode.decomposeme.ui.resourses.ResponseCodes
 
 class LoginActivityPresenter(
     private val userRepository: IUserDatabaseRepository,
@@ -31,7 +29,7 @@ class LoginActivityPresenter(
         if (!isFirstAttach) {
             if (isLoginSuccess) {
                 view.setLoginSuccess(currentLogin)
-                if (currentLogin == ADMIN_LOGIN) {
+                if (currentLogin == DefaultUsersParams.DEFAULT_ADMIN_LOGIN.value) {
                     view.setAdminLoginSuccess()
                 }
             }
@@ -47,7 +45,7 @@ class LoginActivityPresenter(
                 }
                 if (isLoginSuccess) {
                     view.setLoginSuccess(currentLogin)
-                    if (currentLogin == ADMIN_LOGIN) {
+                    if (currentLogin == DefaultUsersParams.DEFAULT_ADMIN_LOGIN.value) {
                         view.setAdminLoginSuccess()
                     }
                 }
@@ -64,17 +62,17 @@ class LoginActivityPresenter(
             view.showProgress()
             userLoginInteractor.login(login, password) { response ->
                 when (response) {
-                    REQUEST_CODE_OK -> {
+                    ResponseCodes.RESPONSE_SUCCESS.code -> {
                         view.hideProgress()
                         view.setLoginSuccess(login)
-                        if (login == ADMIN_LOGIN) {
+                        if (login == DefaultUsersParams.DEFAULT_ADMIN_LOGIN.value) {
                             view.setAdminLoginSuccess()
                         }
                         isLoginSuccess = true
                         currentLogin = login
                     }
 
-                    REQUEST_CODE_LOGIN_NOT_REGISTERED -> {
+                    ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
                         view.hideProgress()
                         view.setLoginError(
                             (view as LoginActivity).getString(
@@ -84,7 +82,7 @@ class LoginActivityPresenter(
                         )
                     }
 
-                    REQUEST_CODE_INVALID_PASSWORD -> {
+                    ResponseCodes.RESPONSE_INVALID_PASSWORD.code -> {
                         view.hideProgress()
                         view.setLoginError((view as LoginActivity).getString(R.string.invalid_password))
                     }
@@ -97,7 +95,7 @@ class LoginActivityPresenter(
         view.showProgress()
         userLoginInteractor.logout(currentLogin) { response ->
             when (response) {
-                REQUEST_CODE_LOGIN_NOT_REGISTERED -> {
+                ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
                     view.hideProgress()
                     view.setLoginError(
                         (view as LoginActivity).getString(
@@ -107,7 +105,7 @@ class LoginActivityPresenter(
                     )
                 }
 
-                REQUEST_CODE_OK -> {
+                ResponseCodes.RESPONSE_SUCCESS.code -> {
                     view.setLogout()
                     isLoginSuccess = false
                     currentLogin = (view as LoginActivity).getString(R.string.empty_text)

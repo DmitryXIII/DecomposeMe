@@ -7,7 +7,6 @@ import android.text.TextWatcher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.ineedyourcode.decomposeme.App
-import com.ineedyourcode.decomposeme.data.EXTRA_LOGIN_SUCCESS
 import com.ineedyourcode.decomposeme.databinding.ActivityRegistrationBinding
 import com.ineedyourcode.decomposeme.ui.extentions.hideKeyboard
 import com.ineedyourcode.decomposeme.ui.extentions.showSnack
@@ -49,7 +48,7 @@ class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.R
 
     override fun setRegistrationSuccess(login: String) {
         startActivity(Intent(this, LoginActivity::class.java).apply {
-            putExtra(EXTRA_LOGIN_SUCCESS, login)
+            putExtra(LoginActivity.EXTRA_LOGIN_SUCCESS, login)
         })
         finish()
     }

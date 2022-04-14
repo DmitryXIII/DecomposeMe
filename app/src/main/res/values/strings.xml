@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">DecomposeMe</string>
+    <string name="password">Пароль</string>
+    <string name="repeat_password">Повторите пароль</string>
+    <string name="login">Логин</string>
+    <string name="new_login">Новый логин</string>
+    <string name="btn_forgot_password_text">Забыли пароль?</string>
+    <string name="registration">Регистрация</string>
+    <string name="invalid_password">Неверный пароль</string>
+    <string name="login_can_not_be_blank">Введите логин</string>
+    <string name="login_not_registered">Логин \"%1$s\" не зарегистрирован</string>
+    <string name="login_registered_yet">Логин \"%1$s\" уже зарегистрирован ранее</string>
+    <string name="hello_user">Добро пожаловать, %1$s!</string>
+    <string name="registration_success">Логин \"%1$s\" успешно зарегистрирован!</string>
+    <string name="reminded_password">Пароль: %1$s</string>
+    <string name="enter_account">Вход в аккаунт</string>
+    <string name="btn_account_exit">Выйти</string>
+    <string name="btn_admin_user_list">Показать скисок пользователей</string>
+    <string name="empty_text">""</string>
 </resources>

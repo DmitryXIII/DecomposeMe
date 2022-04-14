@@ -18,9 +18,6 @@ class LoginActivityPresenter(
     private lateinit var currentLogin: String
     private lateinit var view: LoginActivityContract.LoginView
 
-    // Задача onAttach: при открытии приложения реализовать проверку - есть ли авторизованный пользователь.
-    // флаг isFirstAttach - для проверки, активити создается при открытии приложения, или активити восстановлена
-    // после поворота экрана и т.д.
     override fun onAttach(mView: LoginActivityContract.LoginView) {
         view = mView
 
@@ -128,6 +125,7 @@ class LoginActivityPresenter(
         if (login.isBlank()) {
             view.showMessage((view as LoginActivity).getString(R.string.login_can_not_be_blank))
         } else {
+            view.showProgress()
             userRepository.getUser(login) { user ->
                 if (user == null) {
                     view.showMessage(
@@ -135,8 +133,10 @@ class LoginActivityPresenter(
                             R.string.login_not_registered,
                             login
                         ))
+                    view.hideProgress()
                 } else {
                     view.receiveUser(user.userLogin, user.userPassword, user.userId)
+                    view.hideProgress()
                 }
             }
         }
@@ -154,6 +154,7 @@ class LoginActivityPresenter(
                     userList.append(" : ")
                     userList.append(user.isAuthorized)
                     userList.append("\n")
+                    userList.append("----------\n")
                 }
                 view.showUserList(userList.toString())
                 view.hideProgress()
@@ -207,11 +208,15 @@ class LoginActivityPresenter(
 
     override fun onUpdateUser(userId: String, login: String, password: String) {
         when {
-            login.isBlank()  -> {
+            userId.isBlank() -> {
+                view.showMessage((view as LoginActivity).getString(R.string.you_have_to_load_data))
+            }
+
+            login.isBlank() -> {
                 view.showMessage((view as LoginActivity).getString(R.string.login_can_not_be_blank))
             }
 
-            password.isBlank()  -> {
+            password.isBlank() -> {
                 view.showMessage((view as LoginActivity).getString(R.string.password_can_not_be_blank))
             }
 

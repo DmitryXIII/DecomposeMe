@@ -90,10 +90,12 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
             with(adminLayout) {
                 deleteUserAdminButton.setOnClickListener {
                     loginPresenter.onDeleteUser(targetUserLoginAdminTextEdit.text.toString())
+                    it.hideKeyboard()
                 }
 
                 getUserAdminButton.setOnClickListener {
                     loginPresenter.onGetUser(targetUserLoginAdminTextEdit.text.toString())
+                    it.hideKeyboard()
                 }
 
                 saveChangesAdminButton.setOnClickListener {
@@ -102,6 +104,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
                         newLoginAdminTextEdit.text.toString(),
                         newPasswordAdminTextEdit.text.toString()
                     )
+                    it.hideKeyboard()
                 }
             }
         }

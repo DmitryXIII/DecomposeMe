@@ -3,4 +3,8 @@
     <dimen name="zero_value">0dp</dimen>
     <dimen name="margin_16dp">16dp</dimen>
     <dimen name="outlined_button_stroke_width">1dp</dimen>
+    <dimen name="user_avatar_size">200dp</dimen>
+    <dimen name="admin_user_list_button_text_size">12sp</dimen>
+    <dimen name="text_size_12sp">12sp</dimen>
+    <dimen name="margin_4dp">4dp</dimen>
 </resources>

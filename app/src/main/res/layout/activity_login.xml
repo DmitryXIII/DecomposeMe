@@ -104,8 +104,8 @@
 
     <androidx.constraintlayout.utils.widget.ImageFilterButton
         android:id="@+id/user_avatar_image_view"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="@dimen/user_avatar_size"
+        android:layout_height="@dimen/user_avatar_size"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_userface"
         app:layout_constraintEnd_toEndOf="parent"
@@ -137,35 +137,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:constraint_referenced_ids="admin_user_list_scroll_view, admin_user_list_button" />
+        app:constraint_referenced_ids="admin_layout" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/admin_user_list_button"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_16dp"
-        android:text="@string/btn_admin_user_list"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/hello_user_text_view" />
-
-    <ScrollView
-        android:id="@+id/admin_user_list_scroll_view"
+    <include
+        android:id="@+id/admin_layout"
+        layout="@layout/admin_layout"
         android:layout_width="@dimen/zero_value"
         android:layout_height="@dimen/zero_value"
+        android:layout_margin="@dimen/margin_4dp"
         app:layout_constraintBottom_toTopOf="@id/logout_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/admin_user_list_button">
-
-        <TextView
-            android:id="@+id/admin_user_list_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:padding="@dimen/margin_16dp" />
-    </ScrollView>
+        app:layout_constraintTop_toBottomOf="@id/hello_user_text_view" />
 
     <ProgressBar
         android:id="@+id/progress_bar"

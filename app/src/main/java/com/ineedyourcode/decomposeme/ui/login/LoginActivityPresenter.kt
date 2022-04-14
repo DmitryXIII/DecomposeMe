@@ -10,7 +10,7 @@ class LoginActivityPresenter(
     private val userRepository: IUserDatabaseRepository,
     private val userLoginInteractor: IUserLoginInteractor,
     private val userRemindPasswordInteractor: IRemindPasswordInteractor,
-    private var isFirstAttach: Boolean
+    private var isFirstAttach: Boolean,
 ) :
     LoginActivityContract.LoginPresenter {
 
@@ -54,7 +54,7 @@ class LoginActivityPresenter(
 
     override fun onLogin(login: String, password: String) {
         if (login.isBlank()) {
-            view.setLoginError((view as LoginActivity).getString(R.string.login_can_not_be_blank))
+            view.showMessage((view as LoginActivity).getString(R.string.login_can_not_be_blank))
         } else {
             view.showProgress()
             userLoginInteractor.login(login, password) { response ->
@@ -71,7 +71,7 @@ class LoginActivityPresenter(
 
                     UiConstants.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
                         view.hideProgress()
-                        view.setLoginError(
+                        view.showMessage(
                             (view as LoginActivity).getString(
                                 R.string.login_not_registered,
                                 login
@@ -81,7 +81,7 @@ class LoginActivityPresenter(
 
                     UiConstants.ResponseCodes.RESPONSE_INVALID_PASSWORD.code -> {
                         view.hideProgress()
-                        view.setLoginError((view as LoginActivity).getString(R.string.invalid_password))
+                        view.showMessage((view as LoginActivity).getString(R.string.invalid_password))
                     }
                 }
             }
@@ -94,7 +94,7 @@ class LoginActivityPresenter(
             when (response) {
                 UiConstants.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
                     view.hideProgress()
-                    view.setLoginError(
+                    view.showMessage(
                         (view as LoginActivity).getString(
                             R.string.login_not_registered,
                             currentLogin
@@ -114,7 +114,7 @@ class LoginActivityPresenter(
 
     override fun onPasswordRemind(login: String) {
         if (login.isBlank()) {
-            view.setLoginError((view as LoginActivity).getString(R.string.login_can_not_be_blank))
+            view.showMessage((view as LoginActivity).getString(R.string.login_can_not_be_blank))
         } else {
             view.showProgress()
             userRemindPasswordInteractor.remindUserPassword(login) { response ->
@@ -124,9 +124,26 @@ class LoginActivityPresenter(
         }
     }
 
-    override fun getUserList() {
-        view.showProgress()
+    override fun onGetUser(login: String) {
+        if (login.isBlank()) {
+            view.showMessage((view as LoginActivity).getString(R.string.login_can_not_be_blank))
+        } else {
+            userRepository.getUser(login) { user ->
+                if (user == null) {
+                    view.showMessage(
+                        (view as LoginActivity).getString(
+                            R.string.login_not_registered,
+                            login
+                        ))
+                } else {
+                    view.receiveUser(user.userLogin, user.userPassword, user.userId)
+                }
+            }
+        }
+    }
 
+    override fun onGetUserList() {
+        view.showProgress()
         userRepository.getAllUsers { mUserList ->
             if (mUserList.isNotEmpty()) {
                 val userList = StringBuilder()
@@ -139,10 +156,90 @@ class LoginActivityPresenter(
                     userList.append("\n")
                 }
                 view.showUserList(userList.toString())
+                view.hideProgress()
             } else {
                 view.showUserList((view as LoginActivity).getString(R.string.empty_text))
+                view.hideProgress()
             }
-            view.hideProgress()
+        }
+    }
+
+    override fun onDeleteUser(login: String) {
+        when {
+            login.isBlank() -> {
+                view.showMessage((view as LoginActivity).getString(R.string.login_can_not_be_blank))
+            }
+
+            login == UiConstants.DefaultUsersParams.DEFAULT_ADMIN_LOGIN.value -> {
+                view.showMessage((view as LoginActivity).getString(R.string.forbidden_to_delete_admin))
+            }
+
+            else -> {
+                view.showProgress()
+                userRepository.deleteUser(login) { response ->
+                    when (response) {
+                        UiConstants.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
+                            view.showMessage((view as LoginActivity).getString(
+                                R.string.login_not_registered,
+                                login
+                            ))
+                            view.hideProgress()
+                        }
+                        UiConstants.ResponseCodes.RESPONSE_SUCCESS.code -> {
+                            onGetUserList()
+                            view.showMessage((view as LoginActivity).getString(
+                                R.string.login_deleted_successful,
+                                login
+                            ))
+                            view.hideProgress()
+                        }
+                        UiConstants.ResponseCodes.RESPONSE_USER_DELETE_FAILED.code -> {
+                            view.showMessage((view as LoginActivity).getString(
+                                R.string.database_error
+                            ))
+                            view.hideProgress()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onUpdateUser(userId: String, login: String, password: String) {
+        when {
+            login.isBlank()  -> {
+                view.showMessage((view as LoginActivity).getString(R.string.login_can_not_be_blank))
+            }
+
+            password.isBlank()  -> {
+                view.showMessage((view as LoginActivity).getString(R.string.password_can_not_be_blank))
+            }
+
+            login == UiConstants.DefaultUsersParams.DEFAULT_ADMIN_LOGIN.value -> {
+                view.showMessage((view as LoginActivity).getString(R.string.forbidden_to_update_admin))
+            }
+
+            else -> {
+                view.showProgress()
+                userRepository.updateUser(userId, login, password, false) { response ->
+                    when (response) {
+                        UiConstants.ResponseCodes.RESPONSE_SUCCESS.code -> {
+                            onGetUserList()
+                            view.showMessage((view as LoginActivity).getString(
+                                R.string.login_updated_successful
+                            ))
+                            view.receiveUser(login, password, userId)
+                            view.hideProgress()
+                        }
+                        UiConstants.ResponseCodes.RESPONSE_USER_UPDATE_FAILED.code -> {
+                            view.showMessage((view as LoginActivity).getString(
+                                R.string.database_error
+                            ))
+                            view.hideProgress()
+                        }
+                    }
+                }
+            }
         }
     }
 }

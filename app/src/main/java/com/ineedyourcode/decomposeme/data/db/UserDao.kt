@@ -16,7 +16,7 @@ interface UserDao {
     @Query("SELECT * FROM UserEntity")
     fun getAllUsers(): List<UserEntity>
 
-    @Query("UPDATE UserEntity SET userLogin = :newLogin, userPassword = :newPassword, isAuthorized = :isAuthorized WHERE userLogin =:userId")
+    @Query("UPDATE UserEntity SET userLogin = :newLogin, userPassword = :newPassword, isAuthorized = :isAuthorized WHERE userId =:userId")
     fun updateUser(userId: String, newLogin: String, newPassword: String, isAuthorized: Boolean)
 
     @Query("DELETE FROM UserEntity WHERE userLogin == :login")

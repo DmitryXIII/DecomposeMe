@@ -5,13 +5,13 @@ import android.os.Handler
 import android.os.Looper
 import androidx.room.Room
 import com.ineedyourcode.decomposeme.data.api.MockUserDatabaseApi
-import com.ineedyourcode.decomposeme.data.interactor.login.MockUserLoginInteractor
-import com.ineedyourcode.decomposeme.data.interactor.remindpassword.MockRemindPasswordInteractor
-import com.ineedyourcode.decomposeme.domain.api.IUserDatabaseApi
 import com.ineedyourcode.decomposeme.data.db.UserDao
 import com.ineedyourcode.decomposeme.data.db.UserDb
+import com.ineedyourcode.decomposeme.data.interactor.login.MockUserLoginInteractor
 import com.ineedyourcode.decomposeme.data.interactor.registration.MockUserRegistrationInteractor
+import com.ineedyourcode.decomposeme.data.interactor.remindpassword.MockRemindPasswordInteractor
 import com.ineedyourcode.decomposeme.data.repository.MockUserDatabaseRepository
+import com.ineedyourcode.decomposeme.domain.api.IUserDatabaseApi
 import com.ineedyourcode.decomposeme.domain.interactor.login.IUserLoginInteractor
 import com.ineedyourcode.decomposeme.domain.interactor.registration.IUserRegistrationInteractor
 import com.ineedyourcode.decomposeme.domain.interactor.remindpassword.IRemindPasswordInteractor

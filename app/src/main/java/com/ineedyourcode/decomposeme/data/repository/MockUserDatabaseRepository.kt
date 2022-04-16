@@ -3,44 +3,20 @@ package com.ineedyourcode.decomposeme.data.repository
 import android.os.Handler
 import com.ineedyourcode.decomposeme.data.db.UserDao
 import com.ineedyourcode.decomposeme.data.db.UserEntity
+import com.ineedyourcode.decomposeme.data.db.defaultdbbuilder.DefaultUserDbBuilder
 import com.ineedyourcode.decomposeme.data.utils.MockDatabaseConstants
 import com.ineedyourcode.decomposeme.data.utils.fakeDelay
 import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
-import java.util.*
 
 class MockUserDatabaseRepository(
     private val roomDataSource: UserDao,
-    private val uiHandler: Handler
+    private val uiHandler: Handler,
 ) : IUserDatabaseRepository {
 
     init {
         if (roomDataSource.getAllUsers().isEmpty()) {
-            initDefaultUserDataBase()
-        }
-    }
-
-    private fun initDefaultUserDataBase() {
-        for (i in 0..9) {
-            when (i) {
-                0 -> {
-                    roomDataSource.createUser(
-                        UserEntity(
-                            UUID.randomUUID().toString(),
-                            MockDatabaseConstants.DefaultUsers.DEFAULT_ADMIN_LOGIN.value,
-                            MockDatabaseConstants.DefaultUsers.DEFAULT_ADMIN_PASSWORD.value
-                        )
-                    )
-                }
-
-                in 1..9 -> {
-                    roomDataSource.createUser(
-                        UserEntity(
-                            UUID.randomUUID().toString(),
-                            MockDatabaseConstants.DefaultUsers.DEFAULT_USER_LOGIN.value + i,
-                            MockDatabaseConstants.DefaultUsers.DEFAULT_USER_PASSWORD.value + i
-                        )
-                    )
-                }
+            DefaultUserDbBuilder(roomDataSource).apply {
+                initDefaultUserDataBase()
             }
         }
     }
@@ -89,7 +65,7 @@ class MockUserDatabaseRepository(
         newLogin: String,
         newPassword: String,
         isAuthorized: Boolean,
-        callback: (Int) -> Unit
+        callback: (Int) -> Unit,
     ) {
         Thread {
             Thread.sleep(fakeDelay())

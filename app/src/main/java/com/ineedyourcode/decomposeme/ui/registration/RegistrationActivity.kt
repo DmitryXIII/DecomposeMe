@@ -2,14 +2,13 @@ package com.ineedyourcode.decomposeme.ui.registration
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.ineedyourcode.decomposeme.App
 import com.ineedyourcode.decomposeme.databinding.ActivityRegistrationBinding
 import com.ineedyourcode.decomposeme.ui.login.LoginActivity
 import com.ineedyourcode.decomposeme.ui.uiutils.hideKeyboard
+import com.ineedyourcode.decomposeme.ui.uiutils.setOnTextTypingListener
 import com.ineedyourcode.decomposeme.ui.uiutils.showSnack
 
 class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.RegistrationView {
@@ -25,17 +24,11 @@ class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.R
         registrationPresenter.onAttach(this)
 
         with(binding) {
-            repeatPasswordTextEdit.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-                override fun afterTextChanged(enteredChars: Editable?) {
-                    if (enteredChars.toString() == passwordTextEdit.text.toString()) {
-                        registrationButton.isEnabled = true
-                    }
+            repeatPasswordTextEdit.setOnTextTypingListener { enteredChars ->
+                if (enteredChars.toString() == passwordTextEdit.text.toString()) {
+                    registrationButton.isEnabled = true
                 }
-            })
+            }
 
             registrationButton.setOnClickListener {
                 registrationPresenter.onRegister(

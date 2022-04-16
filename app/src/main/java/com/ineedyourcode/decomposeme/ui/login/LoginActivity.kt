@@ -4,16 +4,20 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.ineedyourcode.decomposeme.App
 import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.databinding.ActivityLoginBinding
-import com.ineedyourcode.decomposeme.domain.EXTRA_LOGIN_SUCCESS
-import com.ineedyourcode.decomposeme.ui.extentions.hideKeyboard
-import com.ineedyourcode.decomposeme.ui.extentions.showSnack
 import com.ineedyourcode.decomposeme.ui.registration.RegistrationActivity
+import com.ineedyourcode.decomposeme.ui.uiutils.hideKeyboard
+import com.ineedyourcode.decomposeme.ui.uiutils.showSnack
 
 class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var loginPresenter: LoginActivityPresenter
+
+    companion object {
+        const val EXTRA_LOGIN_REGISTRATION_SUCCESS = "EXTRA_LOGIN_SUCCESS"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,40 +27,43 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         val registrationActivityIntent = Intent(this, RegistrationActivity::class.java)
 
         with(binding) {
-            intent.getStringExtra(EXTRA_LOGIN_SUCCESS)?.let {
+            intent.getStringExtra(EXTRA_LOGIN_REGISTRATION_SUCCESS)?.let {
                 val registeredLogin = it
-                textEditLogin.setText(registeredLogin)
+                loginTextEdit.setText(registeredLogin)
                 root.showSnack(getString(R.string.registration_success, registeredLogin))
-                intent.removeExtra(EXTRA_LOGIN_SUCCESS)
+                intent.removeExtra(EXTRA_LOGIN_REGISTRATION_SUCCESS)
             }
 
             loginPresenter = restorePresenter().apply { onAttach(this@LoginActivity) }
 
-            btnRegistration.setOnClickListener {
+            registrationButton.setOnClickListener {
                 startActivity(registrationActivityIntent)
                 finish()
             }
 
-            btnLogin.setOnClickListener {
+            loginButton.setOnClickListener {
                 loginPresenter.onLogin(
-                    textEditLogin.text.toString(),
-                    textEditPassword.text.toString()
+                    loginTextEdit.text.toString(),
+                    passwordTextEdit.text.toString()
                 )
             }
 
-            btnForgotPassword.setOnClickListener {
-                loginPresenter.onPasswordRemind(textEditLogin.text.toString())
+            forgotPasswordButton.setOnClickListener {
+                loginPresenter.onPasswordRemind(loginTextEdit.text.toString())
             }
 
-            btnAccountExit.setOnClickListener {
-                loginPresenter.onAccountExit()
+            logoutButton.setOnClickListener {
+                loginPresenter.onLogout()
             }
         }
     }
 
     private fun restorePresenter(): LoginActivityPresenter {
         val presenter = lastCustomNonConfigurationInstance as? LoginActivityPresenter
-        return presenter ?: LoginActivityPresenter()
+        return presenter ?: LoginActivityPresenter(App.userRepository,
+            App.userLoginInteractor,
+            App.userRemindPasswordInteractor,
+            true)
     }
 
     @Deprecated("Deprecated in Java")
@@ -70,40 +77,67 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
             authorizedGroup.isVisible = true
             loginGroup.isVisible = false
             adminGroup.isVisible = false
-            tvHelloUser.text = getString(R.string.hello_user, login)
-            textEditLogin.text?.clear()
-            textEditPassword.text?.clear()
+            helloUserTextView.text = getString(R.string.hello_user, login)
+            loginTextEdit.text?.clear()
+            passwordTextEdit.text?.clear()
         }
     }
 
     override fun setAdminLoginSuccess() {
-        binding.btnAdminUserList.apply {
-            isVisible = true
-            setOnClickListener {
-                binding.adminUserListScroll.isVisible = true
-                loginPresenter.getUserList()
+        with(binding) {
+            adminGroup.isVisible = true
+            loginPresenter.onGetUserList()
+            with(adminLayout) {
+                deleteUserAdminButton.setOnClickListener {
+                    loginPresenter.onDeleteUser(targetUserLoginAdminTextEdit.text.toString())
+                    it.hideKeyboard()
+                }
+
+                getUserAdminButton.setOnClickListener {
+                    loginPresenter.onGetUser(targetUserLoginAdminTextEdit.text.toString())
+                    it.hideKeyboard()
+                }
+
+                saveChangesAdminButton.setOnClickListener {
+                    loginPresenter.onUpdateUser(
+                        userIdAdminTextView.text.toString(),
+                        newLoginAdminTextEdit.text.toString(),
+                        newPasswordAdminTextEdit.text.toString()
+                    )
+                    it.hideKeyboard()
+                }
             }
         }
     }
 
-    override fun setLoginError(error: String) {
+    override fun showMessage(message: String) {
         binding.root.apply {
             hideKeyboard()
-            showSnack(error)
+            showSnack(message)
         }
     }
 
-    override fun exitAccount() {
+    override fun receiveUser(login: String, password: String, id: String) {
+        with(binding.adminLayout) {
+            targetUserLoginAdminTextEdit.setText(login)
+            userIdAdminTextView.text = id
+            newLoginAdminTextEdit.setText(login)
+            newPasswordAdminTextEdit.setText(password)
+        }
+    }
+
+    override fun setLogout() {
         with(binding) {
-            tvHelloUser.text = getString(R.string.empty_text)
+            helloUserTextView.text = getString(R.string.empty_text)
+            adminLayout.userListAdminTextView.text = getString(R.string.empty_text)
             authorizedGroup.isVisible = false
             adminGroup.isVisible = false
             loginGroup.isVisible = true
         }
     }
 
-    override fun showUserList(text: String) {
-        binding.tvAdminUserList.text = text
+    override fun showUserList(userList: String) {
+        binding.adminLayout.userListAdminTextView.text = userList
     }
 
     override fun showRemindedPassword(remindedPassword: String) {

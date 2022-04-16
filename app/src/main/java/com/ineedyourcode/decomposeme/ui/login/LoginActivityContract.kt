@@ -2,21 +2,25 @@ package com.ineedyourcode.decomposeme.ui.login
 
 class LoginActivityContract {
     interface LoginView {
+        fun hideProgress()
+        fun receiveUser(login: String, password: String, id: String)
         fun setLoginSuccess(login: String)
         fun setAdminLoginSuccess()
-        fun setLoginError(error: String)
-        fun exitAccount()
-        fun showUserList(text: String)
-        fun showRemindedPassword(remindedPassword: String)
+        fun setLogout()
+        fun showMessage(message: String)
         fun showProgress()
-        fun hideProgress()
+        fun showRemindedPassword(remindedPassword: String)
+        fun showUserList(userList: String)
     }
 
     interface LoginPresenter {
         fun onAttach(mView: LoginView)
+        fun onDeleteUser(login: String)
+        fun onGetUser(login: String)
+        fun onGetUserList()
         fun onLogin(login: String, password: String)
-        fun onAccountExit()
+        fun onLogout()
         fun onPasswordRemind(login: String)
-        fun getUserList()
+        fun onUpdateUser(userId: String, login: String, password: String)
     }
 }

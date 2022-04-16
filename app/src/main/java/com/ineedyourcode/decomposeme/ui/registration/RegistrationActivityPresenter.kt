@@ -1,19 +1,11 @@
 package com.ineedyourcode.decomposeme.ui.registration
 
-import android.os.Handler
-import android.os.Looper
-import com.ineedyourcode.decomposeme.App
 import com.ineedyourcode.decomposeme.R
-import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_LOGIN_REGISTERED_YET
-import com.ineedyourcode.decomposeme.domain.REQUEST_CODE_OK
-import com.ineedyourcode.decomposeme.domain.fakeDelay
-import com.ineedyourcode.decomposeme.domain.repository.IUserRepository
-import com.ineedyourcode.decomposeme.domain.repository.UserRepository
+import com.ineedyourcode.decomposeme.domain.interactor.registration.IUserRegistrationInteractor
+import com.ineedyourcode.decomposeme.ui.uiutils.UiConstants
 
-class RegistrationActivityPresenter : RegistrationActivityContract.RegistrationPresenter {
-    private val userRepository: IUserRepository = UserRepository(App.getUserDao())
-
-    private val uiThread = Handler(Looper.getMainLooper())
+class RegistrationActivityPresenter(private val userRegistrationInteractor: IUserRegistrationInteractor) :
+    RegistrationActivityContract.RegistrationPresenter {
 
     private lateinit var view: RegistrationActivityContract.RegistrationView
 
@@ -26,13 +18,13 @@ class RegistrationActivityPresenter : RegistrationActivityContract.RegistrationP
             view.setRegistrationError((view as RegistrationActivity).getString(R.string.login_can_not_be_blank))
         } else {
             view.showProgress()
-            uiThread.postDelayed({
-                when (userRepository.addNewUser(login, password)) {
-                    REQUEST_CODE_OK -> {
+            userRegistrationInteractor.userRegistration(login, password) { response ->
+                when (response) {
+                    UiConstants.ResponseCodes.RESPONSE_SUCCESS.code -> {
                         view.hideProgress()
                         view.setRegistrationSuccess(login)
                     }
-                    REQUEST_CODE_LOGIN_REGISTERED_YET -> {
+                    UiConstants.ResponseCodes.RESPONSE_LOGIN_REGISTERED_YET.code -> {
                         view.hideProgress()
                         view.setRegistrationError(
                             (view as RegistrationActivity).getString(
@@ -42,7 +34,7 @@ class RegistrationActivityPresenter : RegistrationActivityContract.RegistrationP
                         )
                     }
                 }
-            }, fakeDelay())
+            }
         }
     }
 }

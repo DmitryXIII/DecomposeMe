@@ -39,7 +39,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textFieldPassword"
+        android:id="@+id/password_text_field"
         android:layout_width="@dimen/zero_value"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_16dp"
@@ -52,7 +52,7 @@
         app:startIconDrawable="@drawable/ic_lock">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/textEditPassword"
+            android:id="@+id/password_text_edit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inputType="textPassword"
@@ -69,7 +69,7 @@
         app:endIconMode="password_toggle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textFieldPassword"
+        app:layout_constraintTop_toBottomOf="@id/password_text_field"
         app:startIconDrawable="@drawable/ic_lock">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -81,7 +81,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnRegistration"
+        android:id="@+id/registration_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_16dp"
@@ -92,7 +92,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"

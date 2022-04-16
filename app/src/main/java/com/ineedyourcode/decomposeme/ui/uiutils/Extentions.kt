@@ -1,4 +1,4 @@
-package com.ineedyourcode.decomposeme.ui.extentions
+package com.ineedyourcode.decomposeme.ui.uiutils
 
 import android.content.Context
 import android.view.View

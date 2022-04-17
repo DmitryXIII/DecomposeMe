@@ -1,4 +1,4 @@
-package com.ineedyourcode.decomposeme.ui.uiutils
+package com.ineedyourcode.decomposeme.ui.utils
 
 import android.content.Context
 import android.text.Editable

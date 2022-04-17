@@ -7,9 +7,10 @@ import androidx.core.view.isVisible
 import com.ineedyourcode.decomposeme.App
 import com.ineedyourcode.decomposeme.databinding.ActivityRegistrationBinding
 import com.ineedyourcode.decomposeme.ui.login.LoginActivity
-import com.ineedyourcode.decomposeme.ui.uiutils.hideKeyboard
-import com.ineedyourcode.decomposeme.ui.uiutils.setOnTextTypingListener
-import com.ineedyourcode.decomposeme.ui.uiutils.showSnack
+import com.ineedyourcode.decomposeme.ui.utils.hideKeyboard
+import com.ineedyourcode.decomposeme.ui.utils.setOnTextTypingListener
+import com.ineedyourcode.decomposeme.ui.utils.showSnack
+
 
 class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.RegistrationView {
     private lateinit var binding: ActivityRegistrationBinding

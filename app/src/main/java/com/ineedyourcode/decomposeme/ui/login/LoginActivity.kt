@@ -8,8 +8,8 @@ import com.ineedyourcode.decomposeme.App
 import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.databinding.ActivityLoginBinding
 import com.ineedyourcode.decomposeme.ui.registration.RegistrationActivity
-import com.ineedyourcode.decomposeme.ui.uiutils.hideKeyboard
-import com.ineedyourcode.decomposeme.ui.uiutils.showSnack
+import com.ineedyourcode.decomposeme.ui.utils.hideKeyboard
+import com.ineedyourcode.decomposeme.ui.utils.showSnack
 
 class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
     private lateinit var binding: ActivityLoginBinding
@@ -100,7 +100,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
 
                 saveChangesAdminButton.setOnClickListener {
                     loginPresenter.onUpdateUser(
-                        userIdAdminTextView.text.toString(),
+                        userIdAdminTextView.text.toString().toInt(),
                         newLoginAdminTextEdit.text.toString(),
                         newPasswordAdminTextEdit.text.toString()
                     )
@@ -117,10 +117,10 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         }
     }
 
-    override fun receiveUser(login: String, password: String, id: String) {
+    override fun receiveUser(login: String, password: String, id: Int) {
         with(binding.adminLayout) {
             targetUserLoginAdminTextEdit.setText(login)
-            userIdAdminTextView.text = id
+            userIdAdminTextView.text = id.toString()
             newLoginAdminTextEdit.setText(login)
             newPasswordAdminTextEdit.setText(password)
         }

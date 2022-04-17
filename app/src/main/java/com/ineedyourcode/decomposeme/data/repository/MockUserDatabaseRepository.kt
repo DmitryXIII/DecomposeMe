@@ -4,9 +4,16 @@ import android.os.Handler
 import com.ineedyourcode.decomposeme.data.db.UserDao
 import com.ineedyourcode.decomposeme.data.db.UserEntity
 import com.ineedyourcode.decomposeme.data.db.defaultdbbuilder.DefaultUserDbBuilder
-import com.ineedyourcode.decomposeme.data.utils.MockDatabaseConstants
 import com.ineedyourcode.decomposeme.data.utils.fakeDelay
 import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
+
+private enum class RepositoryResponseCodes(val code: Int) {
+    RESPONSE_SUCCESS(200),
+    RESPONSE_LOGIN_NOT_REGISTERED(404),
+    RESPONSE_LOGIN_REGISTERED_YET(444),
+    RESPONSE_USER_UPDATE_FAILED(454),
+    RESPONSE_USER_DELETE_FAILED(464)
+}
 
 class MockUserDatabaseRepository(
     private val roomDataSource: UserDao,
@@ -33,9 +40,9 @@ class MockUserDatabaseRepository(
                                 userPassword = password
                             )
                         )
-                        MockDatabaseConstants.ResponseCodes.RESPONSE_SUCCESS.code
+                        RepositoryResponseCodes.RESPONSE_SUCCESS.code
                     } else {
-                        MockDatabaseConstants.ResponseCodes.RESPONSE_LOGIN_REGISTERED_YET.code
+                        RepositoryResponseCodes.RESPONSE_LOGIN_REGISTERED_YET.code
                     }
                 )
             }
@@ -61,7 +68,7 @@ class MockUserDatabaseRepository(
     }
 
     override fun updateUser(
-        userId: String,
+        userId: Int,
         newLogin: String,
         newPassword: String,
         isAuthorized: Boolean,
@@ -74,10 +81,10 @@ class MockUserDatabaseRepository(
                 callback(
                     when (roomDataSource.getUser(newLogin)) {
                         null -> {
-                            MockDatabaseConstants.ResponseCodes.RESPONSE_USER_UPDATE_FAILED.code
+                            RepositoryResponseCodes.RESPONSE_USER_UPDATE_FAILED.code
                         }
                         else -> {
-                            MockDatabaseConstants.ResponseCodes.RESPONSE_SUCCESS.code
+                            RepositoryResponseCodes.RESPONSE_SUCCESS.code
                         }
                     }
                 )
@@ -92,16 +99,16 @@ class MockUserDatabaseRepository(
                 callback(
                     when (roomDataSource.getUser(login)) {
                         null -> {
-                            MockDatabaseConstants.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code
+                            RepositoryResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code
                         }
                         else -> {
                             roomDataSource.deleteUser(login)
                             when (roomDataSource.getUser(login)) {
                                 null -> {
-                                    MockDatabaseConstants.ResponseCodes.RESPONSE_SUCCESS.code
+                                    RepositoryResponseCodes.RESPONSE_SUCCESS.code
                                 }
                                 else -> {
-                                    MockDatabaseConstants.ResponseCodes.RESPONSE_USER_DELETE_FAILED.code
+                                    RepositoryResponseCodes.RESPONSE_USER_DELETE_FAILED.code
                                 }
                             }
                         }

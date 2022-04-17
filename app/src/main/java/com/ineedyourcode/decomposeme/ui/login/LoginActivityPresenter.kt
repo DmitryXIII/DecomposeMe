@@ -4,7 +4,16 @@ import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.domain.interactor.login.IUserLoginInteractor
 import com.ineedyourcode.decomposeme.domain.interactor.remindpassword.IRemindPasswordInteractor
 import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
-import com.ineedyourcode.decomposeme.ui.uiutils.UiConstants
+
+private const val DEFAULT_ADMIN_LOGIN = "admin"
+
+private enum class ResponseCodes(val code: Int) {
+    RESPONSE_SUCCESS(200),
+    RESPONSE_INVALID_PASSWORD(403),
+    RESPONSE_LOGIN_NOT_REGISTERED(404),
+    RESPONSE_USER_UPDATE_FAILED(454),
+    RESPONSE_USER_DELETE_FAILED(464)
+}
 
 class LoginActivityPresenter(
     private val userRepository: IUserDatabaseRepository,
@@ -43,7 +52,7 @@ class LoginActivityPresenter(
     private fun checkIsLoginSuccess() {
         if (isLoginSuccess) {
             view.setLoginSuccess(currentLogin)
-            if (currentLogin == UiConstants.DefaultUsersParams.DEFAULT_ADMIN_LOGIN.value) {
+            if (currentLogin == DEFAULT_ADMIN_LOGIN) {
                 view.setAdminLoginSuccess()
             }
         }
@@ -56,17 +65,17 @@ class LoginActivityPresenter(
             view.showProgress()
             userLoginInteractor.login(login, password) { response ->
                 when (response) {
-                    UiConstants.ResponseCodes.RESPONSE_SUCCESS.code -> {
+                    ResponseCodes.RESPONSE_SUCCESS.code -> {
                         view.hideProgress()
                         view.setLoginSuccess(login)
-                        if (login == UiConstants.DefaultUsersParams.DEFAULT_ADMIN_LOGIN.value) {
+                        if (login == DEFAULT_ADMIN_LOGIN) {
                             view.setAdminLoginSuccess()
                         }
                         isLoginSuccess = true
                         currentLogin = login
                     }
 
-                    UiConstants.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
+                    ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
                         view.hideProgress()
                         view.showMessage(
                             (view as LoginActivity).getString(
@@ -76,7 +85,7 @@ class LoginActivityPresenter(
                         )
                     }
 
-                    UiConstants.ResponseCodes.RESPONSE_INVALID_PASSWORD.code -> {
+                    ResponseCodes.RESPONSE_INVALID_PASSWORD.code -> {
                         view.hideProgress()
                         view.showMessage((view as LoginActivity).getString(R.string.invalid_password))
                     }
@@ -89,7 +98,7 @@ class LoginActivityPresenter(
         view.showProgress()
         userLoginInteractor.logout(currentLogin) { response ->
             when (response) {
-                UiConstants.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
+                ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
                     view.hideProgress()
                     view.showMessage(
                         (view as LoginActivity).getString(
@@ -99,7 +108,7 @@ class LoginActivityPresenter(
                     )
                 }
 
-                UiConstants.ResponseCodes.RESPONSE_SUCCESS.code -> {
+                ResponseCodes.RESPONSE_SUCCESS.code -> {
                     view.setLogout()
                     isLoginSuccess = false
                     currentLogin = (view as LoginActivity).getString(R.string.empty_text)
@@ -171,7 +180,7 @@ class LoginActivityPresenter(
                 view.showMessage((view as LoginActivity).getString(R.string.login_can_not_be_blank))
             }
 
-            login == UiConstants.DefaultUsersParams.DEFAULT_ADMIN_LOGIN.value -> {
+            login == DEFAULT_ADMIN_LOGIN -> {
                 view.showMessage((view as LoginActivity).getString(R.string.forbidden_to_delete_admin))
             }
 
@@ -179,14 +188,14 @@ class LoginActivityPresenter(
                 view.showProgress()
                 userRepository.deleteUser(login) { response ->
                     when (response) {
-                        UiConstants.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
+                        ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
                             view.showMessage((view as LoginActivity).getString(
                                 R.string.login_not_registered,
                                 login
                             ))
                             view.hideProgress()
                         }
-                        UiConstants.ResponseCodes.RESPONSE_SUCCESS.code -> {
+                        ResponseCodes.RESPONSE_SUCCESS.code -> {
                             onGetUserList()
                             view.showMessage((view as LoginActivity).getString(
                                 R.string.login_deleted_successful,
@@ -194,7 +203,7 @@ class LoginActivityPresenter(
                             ))
                             view.hideProgress()
                         }
-                        UiConstants.ResponseCodes.RESPONSE_USER_DELETE_FAILED.code -> {
+                        ResponseCodes.RESPONSE_USER_DELETE_FAILED.code -> {
                             view.showMessage((view as LoginActivity).getString(
                                 R.string.database_error
                             ))
@@ -206,9 +215,9 @@ class LoginActivityPresenter(
         }
     }
 
-    override fun onUpdateUser(userId: String, login: String, password: String) {
+    override fun onUpdateUser(userId: Int, login: String, password: String) {
         when {
-            userId.isBlank() -> {
+            userId.toString().isBlank() -> {
                 view.showMessage((view as LoginActivity).getString(R.string.you_have_to_load_data))
             }
 
@@ -220,7 +229,7 @@ class LoginActivityPresenter(
                 view.showMessage((view as LoginActivity).getString(R.string.password_can_not_be_blank))
             }
 
-            login == UiConstants.DefaultUsersParams.DEFAULT_ADMIN_LOGIN.value -> {
+            login == DEFAULT_ADMIN_LOGIN -> {
                 view.showMessage((view as LoginActivity).getString(R.string.forbidden_to_update_admin))
             }
 
@@ -228,7 +237,7 @@ class LoginActivityPresenter(
                 view.showProgress()
                 userRepository.updateUser(userId, login, password, false) { response ->
                     when (response) {
-                        UiConstants.ResponseCodes.RESPONSE_SUCCESS.code -> {
+                        ResponseCodes.RESPONSE_SUCCESS.code -> {
                             onGetUserList()
                             view.showMessage((view as LoginActivity).getString(
                                 R.string.login_updated_successful
@@ -236,7 +245,7 @@ class LoginActivityPresenter(
                             view.receiveUser(login, password, userId)
                             view.hideProgress()
                         }
-                        UiConstants.ResponseCodes.RESPONSE_USER_UPDATE_FAILED.code -> {
+                        ResponseCodes.RESPONSE_USER_UPDATE_FAILED.code -> {
                             view.showMessage((view as LoginActivity).getString(
                                 R.string.database_error
                             ))

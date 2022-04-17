@@ -1,11 +1,10 @@
 package com.ineedyourcode.decomposeme
 
 import android.app.Application
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import androidx.room.Room
 import com.ineedyourcode.decomposeme.data.api.MockUserDatabaseApi
-import com.ineedyourcode.decomposeme.data.db.UserDao
 import com.ineedyourcode.decomposeme.data.db.UserDb
 import com.ineedyourcode.decomposeme.data.interactor.login.MockUserLoginInteractor
 import com.ineedyourcode.decomposeme.data.interactor.registration.MockUserRegistrationInteractor
@@ -21,49 +20,35 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        instance = this
+        applicationInstance = this
+        appContext = this.applicationContext
     }
 
     companion object {
-        private const val APP_DB_NAME = "Users.db"
+        private lateinit var applicationInstance: App
+        private lateinit var appContext: Context
+
         private val uiHandler = Handler(Looper.getMainLooper())
+
         private val userDatabaseApi: IUserDatabaseApi by lazy {
-            MockUserDatabaseApi(getUserDao())
+            MockUserDatabaseApi(UserDb.getDatabase(appContext).userDao())
         }
-        private var instance: App? = null
-        private var appDb: UserDb? = null
+
         val userRepository: IUserDatabaseRepository by lazy {
-            MockUserDatabaseRepository(getUserDao(), uiHandler)
+            MockUserDatabaseRepository(UserDb.getDatabase(appContext).userDao(),
+                uiHandler)
         }
+
         val userLoginInteractor: IUserLoginInteractor by lazy {
             MockUserLoginInteractor(userDatabaseApi, uiHandler)
         }
+
         val userRemindPasswordInteractor: IRemindPasswordInteractor by lazy {
             MockRemindPasswordInteractor(userDatabaseApi, uiHandler)
         }
+
         val userRegistrationInteractor: IUserRegistrationInteractor by lazy {
             MockUserRegistrationInteractor(userRepository)
-        }
-
-
-        private fun getUserDao(): UserDao {
-            if (appDb == null) {
-                synchronized(UserDb::class.java) {
-                    if (appDb == null) {
-                        if (instance == null) throw IllegalAccessException("App is null")
-                        appDb = Room.databaseBuilder(
-                            instance!!.applicationContext,
-                            UserDb::class.java,
-                            APP_DB_NAME
-                        )
-                            .allowMainThreadQueries()
-                            .fallbackToDestructiveMigration()
-                            .build()
-                    }
-                }
-            }
-
-            return appDb!!.userDao()
         }
     }
 }

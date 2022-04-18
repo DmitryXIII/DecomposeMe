@@ -5,7 +5,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import com.ineedyourcode.decomposeme.data.api.MockUserDatabaseApi
-import com.ineedyourcode.decomposeme.data.db.UserDb
+import com.ineedyourcode.decomposeme.data.db.UserDatabase
 import com.ineedyourcode.decomposeme.data.interactor.login.MockUserLoginInteractor
 import com.ineedyourcode.decomposeme.data.interactor.registration.MockUserRegistrationInteractor
 import com.ineedyourcode.decomposeme.data.interactor.remindpassword.MockRemindPasswordInteractor
@@ -27,16 +27,18 @@ class App : Application() {
     companion object {
         private lateinit var applicationInstance: App
         private lateinit var appContext: Context
-
         private val uiHandler = Handler(Looper.getMainLooper())
 
+        private val userDatabase: UserDatabase by lazy {
+            UserDatabase.getUserDatabase(appContext)
+        }
+
         private val userDatabaseApi: IUserDatabaseApi by lazy {
-            MockUserDatabaseApi(UserDb.getDatabase(appContext).userDao())
+            MockUserDatabaseApi(userDatabase.userDao())
         }
 
         val userRepository: IUserDatabaseRepository by lazy {
-            MockUserDatabaseRepository(UserDb.getDatabase(appContext).userDao(),
-                uiHandler)
+            MockUserDatabaseRepository(userDatabase.userDao(), uiHandler)
         }
 
         val userLoginInteractor: IUserLoginInteractor by lazy {

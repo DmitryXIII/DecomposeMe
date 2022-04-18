@@ -7,18 +7,18 @@ import androidx.room.RoomDatabase
 
 private const val USER_DB_NAME = "Users.db"
 
-@Database(entities = [UserEntity::class], version = 4, exportSchema = false)
-abstract class UserDb : RoomDatabase() {
+@Database(entities = [UserEntity::class], version = 3, exportSchema = false)
+abstract class UserDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao
 
     companion object {
-        private var INSTANCE: UserDb? = null
+        private var INSTANCE: UserDatabase? = null
 
-        fun getDatabase(context: Context): UserDb {
+        fun getUserDatabase(context: Context): UserDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(context.applicationContext,
-                    UserDb::class.java,
+                    UserDatabase::class.java,
                     USER_DB_NAME)
                     .allowMainThreadQueries()
                     .fallbackToDestructiveMigration()

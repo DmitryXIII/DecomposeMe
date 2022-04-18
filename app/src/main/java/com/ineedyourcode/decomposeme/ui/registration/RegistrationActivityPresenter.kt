@@ -3,11 +3,6 @@ package com.ineedyourcode.decomposeme.ui.registration
 import com.ineedyourcode.decomposeme.R
 import com.ineedyourcode.decomposeme.domain.interactor.registration.IUserRegistrationInteractor
 
-private enum class ResponseCodes(val code: Int) {
-    RESPONSE_SUCCESS(200),
-    RESPONSE_LOGIN_REGISTERED_YET(444)
-}
-
 class RegistrationActivityPresenter(private val userRegistrationInteractor: IUserRegistrationInteractor) :
     RegistrationActivityContract.RegistrationPresenter {
 
@@ -41,4 +36,9 @@ class RegistrationActivityPresenter(private val userRegistrationInteractor: IUse
             }
         }
     }
+}
+
+private enum class ResponseCodes(val code: Int) {
+    RESPONSE_SUCCESS(200),
+    RESPONSE_LOGIN_REGISTERED_YET(444)
 }

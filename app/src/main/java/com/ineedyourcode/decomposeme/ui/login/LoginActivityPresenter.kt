@@ -7,14 +7,6 @@ import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
 
 private const val DEFAULT_ADMIN_LOGIN = "admin"
 
-private enum class ResponseCodes(val code: Int) {
-    RESPONSE_SUCCESS(200),
-    RESPONSE_INVALID_PASSWORD(403),
-    RESPONSE_LOGIN_NOT_REGISTERED(404),
-    RESPONSE_USER_UPDATE_FAILED(454),
-    RESPONSE_USER_DELETE_FAILED(464)
-}
-
 class LoginActivityPresenter(
     private val userRepository: IUserDatabaseRepository,
     private val userLoginInteractor: IUserLoginInteractor,
@@ -256,4 +248,12 @@ class LoginActivityPresenter(
             }
         }
     }
+}
+
+private enum class ResponseCodes(val code: Int) {
+    RESPONSE_SUCCESS(200),
+    RESPONSE_INVALID_PASSWORD(403),
+    RESPONSE_LOGIN_NOT_REGISTERED(404),
+    RESPONSE_USER_UPDATE_FAILED(454),
+    RESPONSE_USER_DELETE_FAILED(464)
 }

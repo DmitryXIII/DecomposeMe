@@ -7,14 +7,6 @@ import com.ineedyourcode.decomposeme.data.db.defaultdbbuilder.DefaultUserDbBuild
 import com.ineedyourcode.decomposeme.data.utils.fakeDelay
 import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
 
-private enum class RepositoryResponseCodes(val code: Int) {
-    RESPONSE_SUCCESS(200),
-    RESPONSE_LOGIN_NOT_REGISTERED(404),
-    RESPONSE_LOGIN_REGISTERED_YET(444),
-    RESPONSE_USER_UPDATE_FAILED(454),
-    RESPONSE_USER_DELETE_FAILED(464)
-}
-
 class MockUserDatabaseRepository(
     private val roomDataSource: UserDao,
     private val uiHandler: Handler,
@@ -117,4 +109,12 @@ class MockUserDatabaseRepository(
             }
         }.start()
     }
+}
+
+private enum class RepositoryResponseCodes(val code: Int) {
+    RESPONSE_SUCCESS(200),
+    RESPONSE_LOGIN_NOT_REGISTERED(404),
+    RESPONSE_LOGIN_REGISTERED_YET(444),
+    RESPONSE_USER_UPDATE_FAILED(454),
+    RESPONSE_USER_DELETE_FAILED(464)
 }

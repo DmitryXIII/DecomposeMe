@@ -4,12 +4,6 @@ import com.ineedyourcode.decomposeme.data.db.UserDao
 import com.ineedyourcode.decomposeme.data.utils.fakeDelay
 import com.ineedyourcode.decomposeme.domain.api.IUserDatabaseApi
 
-private enum class ApiResponseCodes(val code: Int) {
-    RESPONSE_SUCCESS(200),
-    RESPONSE_INVALID_PASSWORD(403),
-    RESPONSE_LOGIN_NOT_REGISTERED(404)
-}
-
 class MockUserDatabaseApi(private val roomDataSource: UserDao) : IUserDatabaseApi {
 
     override fun login(login: String, password: String): Int {
@@ -56,4 +50,10 @@ class MockUserDatabaseApi(private val roomDataSource: UserDao) : IUserDatabaseAp
 private enum class ApiStringResources(val value: String) {
     MESSAGE_LOGIN_NOT_REGISTERED("Логин не зарегистрирован"),
     MESSAGE_YOUR_PASSWORD_IS("Пароль: ")
+}
+
+private enum class ApiResponseCodes(val code: Int) {
+    RESPONSE_SUCCESS(200),
+    RESPONSE_INVALID_PASSWORD(403),
+    RESPONSE_LOGIN_NOT_REGISTERED(404)
 }

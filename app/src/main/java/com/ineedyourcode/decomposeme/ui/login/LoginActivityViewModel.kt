@@ -13,7 +13,7 @@ class LoginActivityViewModel(
     private val userLoginInteractor: IUserLoginInteractor,
     private val userRemindPasswordInteractor: IRemindPasswordInteractor,
 ) :
-    LoginActivityContract.LoginViewModel {
+    LoginViewModelContract {
 
     private lateinit var currentLogin: String
     private var isAppStart = true

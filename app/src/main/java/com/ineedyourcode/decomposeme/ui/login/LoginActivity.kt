@@ -15,7 +15,7 @@ import com.ineedyourcode.decomposeme.ui.utils.showSnack
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
-    private var loginViewModel: LoginActivityContract.LoginViewModel? = null
+    private var loginViewModel: LoginViewModelContract? = null
     private val uiHandler: Handler by lazy { Handler(mainLooper) }
 
     companion object {

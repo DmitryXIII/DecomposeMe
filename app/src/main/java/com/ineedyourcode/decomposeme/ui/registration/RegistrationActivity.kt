@@ -2,6 +2,7 @@ package com.ineedyourcode.decomposeme.ui.registration
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.ineedyourcode.decomposeme.App
@@ -11,17 +12,38 @@ import com.ineedyourcode.decomposeme.ui.utils.hideKeyboard
 import com.ineedyourcode.decomposeme.ui.utils.setOnTextTypingListener
 import com.ineedyourcode.decomposeme.ui.utils.showSnack
 
-class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.RegistrationView {
+class RegistrationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegistrationBinding
-    private lateinit var registrationPresenter: RegistrationActivityPresenter
+    private var registrationViewModel: RegistrationActivityViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegistrationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        registrationPresenter = RegistrationActivityPresenter(App.userRegistrationInteractor)
-        registrationPresenter.onAttach(this)
+        val uiHandler = Handler(mainLooper)
+
+        registrationViewModel = restoreViewModel()
+
+        registrationViewModel?.messenger?.subscribe(uiHandler) { message ->
+            message?.let {
+                showMessage(message)
+            }
+        }
+
+        registrationViewModel?.registrationSuccess?.subscribe(uiHandler) { login ->
+            login?.let {
+                setRegistrationSuccess(login)
+            }
+        }
+
+        registrationViewModel?.isInProgress?.subscribe(uiHandler) { isInProgress ->
+            if (isInProgress == true) {
+                showProgress()
+            } else {
+                hideProgress()
+            }
+        }
 
         with(binding) {
             repeatPasswordTextEdit.setOnTextTypingListener { enteredChars ->
@@ -31,7 +53,7 @@ class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.R
             }
 
             registrationButton.setOnClickListener {
-                registrationPresenter.onRegister(
+                registrationViewModel?.onRegister(
                     newLoginTextEdit.text.toString(),
                     repeatPasswordTextEdit.text.toString()
                 )
@@ -39,25 +61,42 @@ class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.R
         }
     }
 
-    override fun setRegistrationSuccess(login: String) {
+    override fun onDestroy() {
+        super.onDestroy()
+        registrationViewModel?.messenger?.unsubscribeAll()
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onRetainCustomNonConfigurationInstance(): Any? {
+        return registrationViewModel
+    }
+
+    private fun restoreViewModel(): RegistrationActivityViewModel {
+        val registrationViewModel =
+            lastCustomNonConfigurationInstance as? RegistrationActivityViewModel
+        return registrationViewModel
+            ?: RegistrationActivityViewModel(App.userRegistrationInteractor)
+    }
+
+    private fun setRegistrationSuccess(login: String) {
         startActivity(Intent(this, LoginActivity::class.java).apply {
             putExtra(LoginActivity.EXTRA_LOGIN_REGISTRATION_SUCCESS, login)
         })
         finish()
     }
 
-    override fun setRegistrationError(error: String) {
-        binding.root.showSnack(error)
+    private fun showMessage(message: String) {
+        binding.root.showSnack(message)
     }
 
-    override fun showProgress() {
+    private fun showProgress() {
         binding.progressBar.apply {
             isVisible = true
             hideKeyboard()
         }
     }
 
-    override fun hideProgress() {
+    private fun hideProgress() {
         binding.progressBar.isVisible = false
     }
 }

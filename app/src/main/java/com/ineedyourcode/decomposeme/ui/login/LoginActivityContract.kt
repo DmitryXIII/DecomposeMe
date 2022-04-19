@@ -1,20 +1,19 @@
 package com.ineedyourcode.decomposeme.ui.login
 
-class LoginActivityContract {
-    interface LoginView {
-        fun hideProgress()
-        fun receiveUser(login: String, password: String, id: Int)
-        fun setLoginSuccess(login: String)
-        fun setAdminLoginSuccess()
-        fun setLogout()
-        fun showMessage(message: String)
-        fun showProgress()
-        fun showRemindedPassword(remindedPassword: String)
-        fun showUserList(userList: String)
-    }
+import com.ineedyourcode.decomposeme.data.db.UserEntity
+import com.ineedyourcode.decomposeme.ui.utils.Publisher
 
-    interface LoginPresenter {
-        fun onAttach(mView: LoginView)
+interface LoginActivityContract {
+
+    interface LoginViewModel {
+
+        val showProgress : Publisher<Boolean>
+        val isLoginSuccess : Publisher<String>
+        val isLogout : Publisher<Boolean>
+        val receivedUser : Publisher<UserEntity>
+        val receivedUserList : Publisher<String>
+        val messenger : Publisher<String>
+
         fun onDeleteUser(login: String)
         fun onGetUser(login: String)
         fun onGetUserList()

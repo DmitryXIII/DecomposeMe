@@ -5,14 +5,13 @@ import android.os.Handler
 class Publisher<T>(private val isSingle: Boolean = false) {
 
     private val subscribers: MutableSet<Subscriber<T?>> = mutableSetOf()
-    
-    var value: T? = null
-        private set
+
+    private var value: T? = null
 
     private var hasFirstValue = false
 
-    fun subscribe(handler: Handler, callback: (T?) -> Unit) {
-        val subscriber = Subscriber(handler, callback)
+    fun subscribe(uiHandler: Handler, callback: (T?) -> Unit) {
+        val subscriber = Subscriber(uiHandler, callback)
         subscribers.add(subscriber)
         if (hasFirstValue) {
             subscriber.invoke(value)
@@ -36,11 +35,11 @@ class Publisher<T>(private val isSingle: Boolean = false) {
 }
 
 private data class Subscriber<T>(
-    private val handler: Handler,
+    private val uiHandler: Handler,
     private val callback: (T?) -> Unit,
 ) {
     fun invoke(value: T?) {
-        handler.post {
+        uiHandler.post {
             callback.invoke(value)
         }
     }

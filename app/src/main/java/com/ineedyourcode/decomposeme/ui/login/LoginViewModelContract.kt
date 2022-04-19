@@ -9,7 +9,7 @@ interface LoginViewModelContract {
     val isLogout: Publisher<Boolean>
     val receivedUser: Publisher<UserEntity>
     val receivedUserList: Publisher<String>
-    val messenger: Publisher<String>
+    val messenger: Publisher<Pair<Int, Any?>>
 
     fun onCheckOnAppStartAuthorization()
     fun onDeleteUser(login: String)
@@ -18,5 +18,5 @@ interface LoginViewModelContract {
     fun onLogin(login: String, password: String)
     fun onLogout()
     fun onPasswordRemind(login: String)
-    fun onUpdateUser(userId: Int, login: String, password: String)
+    fun onUpdateUser(userId: String, login: String, password: String)
 }

@@ -6,7 +6,7 @@ import com.ineedyourcode.decomposeme.domain.interactor.remindpassword.IRemindPas
 class MockRemindPasswordInteractor(
     private val userDatabaseApi: IUserDatabaseApi,
 ) : IRemindPasswordInteractor {
-    override fun remindUserPassword(login: String, callback: (String) -> Unit) {
+    override fun remindUserPassword(login: String, callback: (Any) -> Unit) {
         Thread {
             callback(userDatabaseApi.remindUserPassword(login))
         }.start()

@@ -27,7 +27,7 @@ class RegistrationActivity : AppCompatActivity() {
 
         registrationViewModel?.messenger?.subscribe(uiHandler) { message ->
             message?.let {
-                showMessage(message)
+                showMessage(getString(message.first, message.second))
             }
         }
 

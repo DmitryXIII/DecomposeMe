@@ -4,6 +4,7 @@ import com.ineedyourcode.decomposeme.data.db.UserEntity
 import com.ineedyourcode.decomposeme.domain.interactor.login.IUserLoginInteractor
 import com.ineedyourcode.decomposeme.domain.interactor.remindpassword.IRemindPasswordInteractor
 import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
+import com.ineedyourcode.decomposeme.ui.utils.MessageMapper
 import com.ineedyourcode.decomposeme.ui.utils.Publisher
 
 private const val DEFAULT_ADMIN_LOGIN = "admin"
@@ -14,8 +15,8 @@ class LoginActivityViewModel(
     private val userRemindPasswordInteractor: IRemindPasswordInteractor,
 ) :
     LoginViewModelContract {
-
-    private lateinit var currentLogin: String
+    private val messageMapper = MessageMapper()
+    private var currentLogin: String? = null
     private var isAppStart = true
 
     override val showProgress: Publisher<Boolean> = Publisher()
@@ -28,7 +29,7 @@ class LoginActivityViewModel(
 
     override val receivedUserList: Publisher<String> = Publisher()
 
-    override val messenger: Publisher<String> = Publisher(true)
+    override val messenger: Publisher<Pair<Int, Any?>> = Publisher(true)
 
     override fun onCheckOnAppStartAuthorization() {
         if (isAppStart) {
@@ -49,25 +50,28 @@ class LoginActivityViewModel(
 
     override fun onLogin(login: String, password: String) {
         if (login.isBlank()) {
-            messenger.post(MessageSource.LOGIN_CANNOT_BE_BLANK.message)
+            messenger.post(Pair(
+                messageMapper.getStringResource(MessageMapper.ResponseCodes.RESPONSE_LOGIN_CANNOT_BE_BLANK.code),
+                null))
         } else {
             showProgress.post(true)
             userLoginInteractor.login(login, password) { response ->
                 when (response) {
-                    ResponseCodes.RESPONSE_SUCCESS.code -> {
+                    MessageMapper.ResponseCodes.RESPONSE_SUCCESS.code -> {
                         showProgress.post(false)
                         isLoginSuccess.post(login)
                         currentLogin = login
                     }
 
-                    ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
+                    MessageMapper.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
                         showProgress.post(false)
-                        messenger.post(MessageSource.LOGIN_NOT_REGISTERED.message)
+                        messenger.post(Pair(messageMapper.getStringResource(MessageMapper.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code),
+                            login))
                     }
 
-                    ResponseCodes.RESPONSE_INVALID_PASSWORD.code -> {
+                    MessageMapper.ResponseCodes.RESPONSE_INVALID_PASSWORD.code -> {
                         showProgress.post(false)
-                        messenger.post(MessageSource.INVALID_PASSWORD.message)
+                        messenger.post(Pair(messageMapper.getStringResource(response), null))
                     }
                 }
             }
@@ -78,14 +82,14 @@ class LoginActivityViewModel(
         showProgress.post(true)
         userLoginInteractor.logout(currentLogin) { response ->
             when (response) {
-                ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
+                MessageMapper.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
                     showProgress.post(false)
-                    messenger.post(MessageSource.LOGIN_NOT_REGISTERED.message)
+                    messenger.post(Pair(messageMapper.getStringResource(response), currentLogin))
                 }
 
-                ResponseCodes.RESPONSE_SUCCESS.code -> {
+                MessageMapper.ResponseCodes.RESPONSE_SUCCESS.code -> {
                     isLogout.post(true)
-                    currentLogin = ""
+                    currentLogin = null
                     showProgress.post(false)
                 }
             }
@@ -94,11 +98,24 @@ class LoginActivityViewModel(
 
     override fun onPasswordRemind(login: String) {
         if (login.isBlank()) {
-            messenger.post(MessageSource.LOGIN_CANNOT_BE_BLANK.message)
+            messenger.post(Pair(
+                messageMapper.getStringResource(MessageMapper.ResponseCodes.RESPONSE_LOGIN_CANNOT_BE_BLANK.code),
+                null))
         } else {
             showProgress.post(true)
-            userRemindPasswordInteractor.remindUserPassword(login) { response ->
-                messenger.post(response)
+            userRemindPasswordInteractor.remindUserPassword(login) { password ->
+                when (password) {
+                    is Int -> {
+                        messenger.post(Pair(
+                            messageMapper.getStringResource(MessageMapper.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code),
+                            login))
+                    }
+                    is String -> {
+                        messenger.post(Pair(
+                            messageMapper.getStringResource(MessageMapper.ResponseCodes.REMINDED_PASSWORD.code),
+                            password))
+                    }
+                }
                 showProgress.post(false)
             }
         }
@@ -106,12 +123,16 @@ class LoginActivityViewModel(
 
     override fun onGetUser(login: String) {
         if (login.isBlank()) {
-            messenger.post(MessageSource.LOGIN_CANNOT_BE_BLANK.message)
+            messenger.post(Pair(
+                messageMapper.getStringResource(MessageMapper.ResponseCodes.RESPONSE_LOGIN_CANNOT_BE_BLANK.code),
+                null))
         } else {
             showProgress.post(true)
             userRepository.getUser(login) { user ->
                 if (user == null) {
-                    messenger.post(MessageSource.LOGIN_NOT_REGISTERED.message)
+                    messenger.post(Pair(
+                        messageMapper.getStringResource(MessageMapper.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code),
+                        login))
                     showProgress.post(false)
                 } else {
                     receivedUser.post(user)
@@ -147,28 +168,34 @@ class LoginActivityViewModel(
     override fun onDeleteUser(login: String) {
         when {
             login.isBlank() -> {
-                messenger.post(MessageSource.LOGIN_CANNOT_BE_BLANK.message)
+                messenger.post(Pair(
+                    messageMapper.getStringResource(MessageMapper.ResponseCodes.RESPONSE_LOGIN_CANNOT_BE_BLANK.code),
+                    null))
             }
 
             login == DEFAULT_ADMIN_LOGIN -> {
-                messenger.post(MessageSource.FORBIDDEN_TO_DELETE.message)
+                messenger.post(Pair(
+                    messageMapper.getStringResource(MessageMapper.ResponseCodes.FORBIDDEN_TO_DELETE.code),
+                    DEFAULT_ADMIN_LOGIN))
             }
 
             else -> {
                 showProgress.post(true)
                 userRepository.deleteUser(login) { response ->
                     when (response) {
-                        ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
-                            messenger.post(MessageSource.LOGIN_NOT_REGISTERED.message)
+                        MessageMapper.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code -> {
+                            messenger.post(Pair(messageMapper.getStringResource(response), login))
                             showProgress.post(false)
                         }
-                        ResponseCodes.RESPONSE_SUCCESS.code -> {
+                        MessageMapper.ResponseCodes.RESPONSE_SUCCESS.code -> {
                             onGetUserList()
-                            messenger.post(MessageSource.ACCOUNT_DELETED.message)
+                            messenger.post(Pair(
+                                messageMapper.getStringResource(MessageMapper.ResponseCodes.ACCOUNT_DELETED.code),
+                                login))
                             showProgress.post(false)
                         }
-                        ResponseCodes.RESPONSE_USER_DELETE_FAILED.code -> {
-                            messenger.post(MessageSource.DATABASE_ACCESS_FAILED.message)
+                        MessageMapper.ResponseCodes.RESPONSE_USER_DELETE_FAILED.code -> {
+                            messenger.post(Pair(messageMapper.getStringResource(response), null))
                             showProgress.post(false)
                         }
                     }
@@ -177,36 +204,48 @@ class LoginActivityViewModel(
         }
     }
 
-    override fun onUpdateUser(userId: Int, login: String, password: String) {
+    override fun onUpdateUser(userId: String, login: String, password: String) {
         when {
-            userId.toString().isBlank() -> {
-                messenger.post(MessageSource.YOU_HAVE_TO_LOAD_USER_DATA.message)
+            userId.isBlank() -> {
+                messenger.post(Pair(
+                    messageMapper.getStringResource(MessageMapper.ResponseCodes.LOAD_USER_DATA.code),
+                    null))
             }
 
             login.isBlank() -> {
-                messenger.post(MessageSource.LOGIN_CANNOT_BE_BLANK.message)
+                messenger.post(Pair(
+                    messageMapper.getStringResource(MessageMapper.ResponseCodes.RESPONSE_LOGIN_CANNOT_BE_BLANK.code),
+                    null))
             }
 
             password.isBlank() -> {
-                messenger.post(MessageSource.PASSWORD_CANNOT_BE_BLANK.message)
+                messenger.post(Pair(
+                    messageMapper.getStringResource(MessageMapper.ResponseCodes.RESPONSE_PASSWORD_CANNOT_BE_BLANK.code),
+                    null))
             }
 
             login == DEFAULT_ADMIN_LOGIN -> {
-                messenger.post(MessageSource.FORBIDDEN_TO_UPDATE.message)
+                messenger.post(Pair(
+                    messageMapper.getStringResource(MessageMapper.ResponseCodes.FORBIDDEN_TO_UPDATE.code),
+                    DEFAULT_ADMIN_LOGIN))
             }
 
             else -> {
                 showProgress.post(true)
-                userRepository.updateUser(userId, login, password, false) { response ->
+                userRepository.updateUser(userId.toInt(), login, password, false) { response ->
                     when (response) {
-                        ResponseCodes.RESPONSE_SUCCESS.code -> {
+                        MessageMapper.ResponseCodes.RESPONSE_SUCCESS.code -> {
                             onGetUserList()
-                            messenger.post(MessageSource.ACCOUNT_UPDATED.message)
-                            receivedUser.post(UserEntity(userId, login, password))
+                            messenger.post(Pair(
+                                messageMapper.getStringResource(MessageMapper.ResponseCodes.ACCOUNT_UPDATED.code),
+                                login))
+                            receivedUser.post(UserEntity(userId.toInt(), login, password))
                             showProgress.post(false)
                         }
-                        ResponseCodes.RESPONSE_USER_UPDATE_FAILED.code -> {
-                            messenger.post(MessageSource.DATABASE_ACCESS_FAILED.message)
+                        MessageMapper.ResponseCodes.RESPONSE_USER_UPDATE_FAILED.code -> {
+                            messenger.post(Pair(
+                                messageMapper.getStringResource(MessageMapper.ResponseCodes.RESPONSE_USER_UPDATE_FAILED.code),
+                                null))
                             showProgress.post(false)
                         }
                     }
@@ -214,25 +253,4 @@ class LoginActivityViewModel(
             }
         }
     }
-}
-
-private enum class ResponseCodes(val code: Int) {
-    RESPONSE_SUCCESS(200),
-    RESPONSE_INVALID_PASSWORD(403),
-    RESPONSE_LOGIN_NOT_REGISTERED(404),
-    RESPONSE_USER_UPDATE_FAILED(454),
-    RESPONSE_USER_DELETE_FAILED(464)
-}
-
-private enum class MessageSource(val message: String) {
-    ACCOUNT_UPDATED("Учетная запись обновлена"),
-    DATABASE_ACCESS_FAILED("Ошибка доступа к базе данных"),
-    FORBIDDEN_TO_UPDATE("Невозможно редактировать \"${DEFAULT_ADMIN_LOGIN}\""),
-    FORBIDDEN_TO_DELETE("Невозможно удалить \"${DEFAULT_ADMIN_LOGIN}\""),
-    PASSWORD_CANNOT_BE_BLANK("Пароль не может быть пустым"),
-    INVALID_PASSWORD("Неверный пароль"),
-    LOGIN_CANNOT_BE_BLANK("Логин не может быть пустым"),
-    LOGIN_NOT_REGISTERED("Логин не зарегистрирован"),
-    ACCOUNT_DELETED("Учетная запись удалена"),
-    YOU_HAVE_TO_LOAD_USER_DATA("Необходимо загрузить данные")
 }

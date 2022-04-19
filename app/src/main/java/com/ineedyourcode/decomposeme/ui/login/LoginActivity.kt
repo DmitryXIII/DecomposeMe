@@ -68,7 +68,7 @@ class LoginActivity : AppCompatActivity() {
 
         loginViewModel?.messenger?.subscribe(uiHandler) { message ->
             message?.let {
-                showMessage(message)
+                showMessage(getString(message.first, message.second))
             }
         }
 
@@ -153,7 +153,7 @@ class LoginActivity : AppCompatActivity() {
 
                 saveChangesAdminButton.setOnClickListener {
                     loginViewModel?.onUpdateUser(
-                        userIdAdminTextView.text.toString().toInt(),
+                        userIdAdminTextView.text.toString(),
                         newLoginAdminTextEdit.text.toString(),
                         newPasswordAdminTextEdit.text.toString()
                     )

@@ -11,7 +11,6 @@ import com.ineedyourcode.decomposeme.ui.utils.hideKeyboard
 import com.ineedyourcode.decomposeme.ui.utils.setOnTextTypingListener
 import com.ineedyourcode.decomposeme.ui.utils.showSnack
 
-
 class RegistrationActivity : AppCompatActivity(), RegistrationActivityContract.RegistrationView {
     private lateinit var binding: ActivityRegistrationBinding
     private lateinit var registrationPresenter: RegistrationActivityPresenter

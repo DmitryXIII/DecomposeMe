@@ -28,13 +28,13 @@ class LoginActivityViewModel(
 
     override val receivedUserList: Publisher<String> = Publisher()
 
-    override val messenger: Publisher<String> = Publisher()
+    override val messenger: Publisher<String> = Publisher(true)
 
     override fun onCheckOnAppStartAuthorization() {
         if (isAppStart) {
             showProgress.post(true)
             userRepository.getAllUsers { userList ->
-                for(user in userList) {
+                for (user in userList) {
                     if (user.isAuthorized) {
                         isLoginSuccess.post(user.userLogin)
                         currentLogin = user.userLogin
@@ -135,10 +135,10 @@ class LoginActivityViewModel(
                     userList.append("\n")
                     userList.append("----------\n")
                 }
-                messenger.post(userList.toString())
+                receivedUserList.post(userList.toString())
                 showProgress.post(false)
             } else {
-                messenger.post("")
+                receivedUserList.post("")
                 showProgress.post(false)
             }
         }

@@ -62,7 +62,7 @@ class MessageMapper {
             }
 
             else -> {
-                R.string.empty_text
+                R.string.unknown_error
             }
         }
     }

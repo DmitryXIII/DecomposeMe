@@ -15,13 +15,12 @@ import com.ineedyourcode.decomposeme.ui.utils.showSnack
 class RegistrationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegistrationBinding
     private var registrationViewModel: RegistrationActivityViewModel? = null
+    private val uiHandler: Handler by lazy { Handler(mainLooper) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegistrationBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val uiHandler = Handler(mainLooper)
 
         registrationViewModel = restoreViewModel()
 

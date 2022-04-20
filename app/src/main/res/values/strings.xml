@@ -30,4 +30,5 @@
     <string name="forbidden_to_update_admin">Нельзя редактировать \"%1$s\"</string>
     <string name="login_updated_successful">Логин \"%1$s\" обновлен</string>
     <string name="password_can_not_be_blank">Пароль не может быть пустым</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
 </resources>

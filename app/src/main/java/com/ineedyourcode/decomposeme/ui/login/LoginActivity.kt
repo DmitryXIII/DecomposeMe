@@ -2,18 +2,21 @@ package com.ineedyourcode.decomposeme.ui.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.ineedyourcode.decomposeme.App
 import com.ineedyourcode.decomposeme.R
+import com.ineedyourcode.decomposeme.data.db.UserEntity
 import com.ineedyourcode.decomposeme.databinding.ActivityLoginBinding
 import com.ineedyourcode.decomposeme.ui.registration.RegistrationActivity
-import com.ineedyourcode.decomposeme.ui.uiutils.hideKeyboard
-import com.ineedyourcode.decomposeme.ui.uiutils.showSnack
+import com.ineedyourcode.decomposeme.ui.utils.hideKeyboard
+import com.ineedyourcode.decomposeme.ui.utils.showSnack
 
-class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
+class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
-    private lateinit var loginPresenter: LoginActivityPresenter
+    private var loginViewModel: LoginViewModelContract? = null
+    private val uiHandler: Handler by lazy { Handler(mainLooper) }
 
     companion object {
         const val EXTRA_LOGIN_REGISTRATION_SUCCESS = "EXTRA_LOGIN_SUCCESS"
@@ -23,6 +26,53 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        loginViewModel = restoreViewModel()
+
+        loginViewModel?.receivedUser?.subscribe(uiHandler) { user ->
+            user?.let {
+                receiveUser(user)
+            }
+        }
+
+        loginViewModel?.showProgress?.subscribe(uiHandler) { isInProgress ->
+            isInProgress?.let {
+                if (isInProgress) {
+                    showProgress()
+                } else {
+                    hideProgress()
+                }
+            }
+        }
+
+        loginViewModel?.isLoginSuccess?.subscribe(uiHandler) { login ->
+            login?.let {
+                setLoginSuccess(login)
+                if (login == "admin") {
+                    setAdminLoginSuccess()
+                }
+            }
+        }
+
+        loginViewModel?.isLogout?.subscribe(uiHandler) { isLogout ->
+            isLogout?.let {
+                if (isLogout) {
+                    setLogout()
+                }
+            }
+        }
+
+        loginViewModel?.receivedUserList?.subscribe(uiHandler) { userListAsString ->
+            userListAsString?.let { showUserList(userListAsString) }
+        }
+
+        loginViewModel?.messenger?.subscribe(uiHandler) { message ->
+            message?.let {
+                showMessage(getString(message.first, message.second))
+            }
+        }
+
+        loginViewModel?.onCheckOnAppStartAuthorization()
 
         val registrationActivityIntent = Intent(this, RegistrationActivity::class.java)
 
@@ -34,44 +84,47 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
                 intent.removeExtra(EXTRA_LOGIN_REGISTRATION_SUCCESS)
             }
 
-            loginPresenter = restorePresenter().apply { onAttach(this@LoginActivity) }
-
             registrationButton.setOnClickListener {
                 startActivity(registrationActivityIntent)
                 finish()
             }
 
             loginButton.setOnClickListener {
-                loginPresenter.onLogin(
+                loginViewModel?.onLogin(
                     loginTextEdit.text.toString(),
                     passwordTextEdit.text.toString()
                 )
             }
 
             forgotPasswordButton.setOnClickListener {
-                loginPresenter.onPasswordRemind(loginTextEdit.text.toString())
+                loginViewModel?.onPasswordRemind(loginTextEdit.text.toString())
             }
 
             logoutButton.setOnClickListener {
-                loginPresenter.onLogout()
+                loginViewModel?.onLogout()
             }
         }
     }
 
-    private fun restorePresenter(): LoginActivityPresenter {
-        val presenter = lastCustomNonConfigurationInstance as? LoginActivityPresenter
-        return presenter ?: LoginActivityPresenter(App.userRepository,
-            App.userLoginInteractor,
-            App.userRemindPasswordInteractor,
-            true)
-    }
-
     @Deprecated("Deprecated in Java")
-    override fun onRetainCustomNonConfigurationInstance(): Any {
-        return loginPresenter
+    override fun onRetainCustomNonConfigurationInstance(): Any? {
+        return loginViewModel
     }
 
-    override fun setLoginSuccess(login: String) {
+    override fun onDestroy() {
+        super.onDestroy()
+        loginViewModel?.isLoginSuccess?.unsubscribeAll()
+    }
+
+    private fun restoreViewModel(): LoginActivityViewModel {
+        val loginViewModel = lastCustomNonConfigurationInstance as? LoginActivityViewModel
+        return loginViewModel ?: LoginActivityViewModel(App.userRepository,
+            App.userLoginInteractor,
+            App.userRemindPasswordInteractor)
+    }
+
+
+    private fun setLoginSuccess(login: String) {
         with(binding) {
             root.hideKeyboard()
             authorizedGroup.isVisible = true
@@ -83,23 +136,23 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         }
     }
 
-    override fun setAdminLoginSuccess() {
+    private fun setAdminLoginSuccess() {
         with(binding) {
             adminGroup.isVisible = true
-            loginPresenter.onGetUserList()
+            loginViewModel?.onGetUserList()
             with(adminLayout) {
                 deleteUserAdminButton.setOnClickListener {
-                    loginPresenter.onDeleteUser(targetUserLoginAdminTextEdit.text.toString())
+                    loginViewModel?.onDeleteUser(targetUserLoginAdminTextEdit.text.toString())
                     it.hideKeyboard()
                 }
 
                 getUserAdminButton.setOnClickListener {
-                    loginPresenter.onGetUser(targetUserLoginAdminTextEdit.text.toString())
+                    loginViewModel?.onGetUser(targetUserLoginAdminTextEdit.text.toString())
                     it.hideKeyboard()
                 }
 
                 saveChangesAdminButton.setOnClickListener {
-                    loginPresenter.onUpdateUser(
+                    loginViewModel?.onUpdateUser(
                         userIdAdminTextView.text.toString(),
                         newLoginAdminTextEdit.text.toString(),
                         newPasswordAdminTextEdit.text.toString()
@@ -110,23 +163,23 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         }
     }
 
-    override fun showMessage(message: String) {
+    private fun showMessage(message: String) {
         binding.root.apply {
             hideKeyboard()
             showSnack(message)
         }
     }
 
-    override fun receiveUser(login: String, password: String, id: String) {
+    private fun receiveUser(user: UserEntity) {
         with(binding.adminLayout) {
-            targetUserLoginAdminTextEdit.setText(login)
-            userIdAdminTextView.text = id
-            newLoginAdminTextEdit.setText(login)
-            newPasswordAdminTextEdit.setText(password)
+            targetUserLoginAdminTextEdit.setText(user.userLogin)
+            userIdAdminTextView.text = user.userId.toString()
+            newLoginAdminTextEdit.setText(user.userLogin)
+            newPasswordAdminTextEdit.setText(user.userPassword)
         }
     }
 
-    override fun setLogout() {
+    private fun setLogout() {
         with(binding) {
             helloUserTextView.text = getString(R.string.empty_text)
             adminLayout.userListAdminTextView.text = getString(R.string.empty_text)
@@ -136,25 +189,18 @@ class LoginActivity : AppCompatActivity(), LoginActivityContract.LoginView {
         }
     }
 
-    override fun showUserList(userList: String) {
+    private fun showUserList(userList: String) {
         binding.adminLayout.userListAdminTextView.text = userList
     }
 
-    override fun showRemindedPassword(remindedPassword: String) {
-        binding.root.apply {
-            hideKeyboard()
-            showSnack(remindedPassword)
-        }
-    }
-
-    override fun showProgress() {
+    private fun showProgress() {
         binding.progressBar.apply {
             hideKeyboard()
             isVisible = true
         }
     }
 
-    override fun hideProgress() {
+    private fun hideProgress() {
         binding.progressBar.isVisible = false
     }
 }

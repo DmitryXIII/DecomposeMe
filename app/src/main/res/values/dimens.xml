@@ -7,4 +7,5 @@
     <dimen name="admin_user_list_button_text_size">12sp</dimen>
     <dimen name="text_size_12sp">12sp</dimen>
     <dimen name="margin_4dp">4dp</dimen>
+    <dimen name="admin_button_height">25dp</dimen>
 </resources>

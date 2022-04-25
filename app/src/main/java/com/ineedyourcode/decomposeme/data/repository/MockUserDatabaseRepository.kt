@@ -1,46 +1,19 @@
 package com.ineedyourcode.decomposeme.data.repository
 
-import android.os.Handler
 import com.ineedyourcode.decomposeme.data.db.UserDao
 import com.ineedyourcode.decomposeme.data.db.UserEntity
-import com.ineedyourcode.decomposeme.data.utils.MockDatabaseConstants
+import com.ineedyourcode.decomposeme.data.db.defaultdbbuilder.DefaultUserDbBuilder
 import com.ineedyourcode.decomposeme.data.utils.fakeDelay
 import com.ineedyourcode.decomposeme.domain.repository.IUserDatabaseRepository
-import java.util.*
 
 class MockUserDatabaseRepository(
     private val roomDataSource: UserDao,
-    private val uiHandler: Handler
 ) : IUserDatabaseRepository {
 
     init {
         if (roomDataSource.getAllUsers().isEmpty()) {
-            initDefaultUserDataBase()
-        }
-    }
-
-    private fun initDefaultUserDataBase() {
-        for (i in 0..9) {
-            when (i) {
-                0 -> {
-                    roomDataSource.createUser(
-                        UserEntity(
-                            UUID.randomUUID().toString(),
-                            MockDatabaseConstants.DefaultUsers.DEFAULT_ADMIN_LOGIN.value,
-                            MockDatabaseConstants.DefaultUsers.DEFAULT_ADMIN_PASSWORD.value
-                        )
-                    )
-                }
-
-                in 1..9 -> {
-                    roomDataSource.createUser(
-                        UserEntity(
-                            UUID.randomUUID().toString(),
-                            MockDatabaseConstants.DefaultUsers.DEFAULT_USER_LOGIN.value + i,
-                            MockDatabaseConstants.DefaultUsers.DEFAULT_USER_PASSWORD.value + i
-                        )
-                    )
-                }
+            DefaultUserDbBuilder(roomDataSource).apply {
+                initDefaultUserDataBase()
             }
         }
     }
@@ -48,90 +21,88 @@ class MockUserDatabaseRepository(
     override fun addUser(login: String, password: String, callback: (Int) -> Unit) {
         Thread {
             Thread.sleep(fakeDelay())
-            uiHandler.post {
-                callback(
-                    if (roomDataSource.getUser(login) == null) {
-                        roomDataSource.createUser(
-                            UserEntity(
-                                userLogin = login,
-                                userPassword = password
-                            )
+            callback(
+                if (roomDataSource.getUser(login) == null) {
+                    roomDataSource.createUser(
+                        UserEntity(
+                            userLogin = login,
+                            userPassword = password
                         )
-                        MockDatabaseConstants.ResponseCodes.RESPONSE_SUCCESS.code
-                    } else {
-                        MockDatabaseConstants.ResponseCodes.RESPONSE_LOGIN_REGISTERED_YET.code
-                    }
-                )
-            }
+                    )
+                    RepositoryResponseCodes.RESPONSE_SUCCESS.code
+                } else {
+                    RepositoryResponseCodes.RESPONSE_LOGIN_REGISTERED_YET.code
+                }
+            )
         }.start()
     }
 
     override fun getUser(login: String, callback: (UserEntity?) -> Unit) {
         Thread {
             Thread.sleep(fakeDelay())
-            uiHandler.post {
-                callback(roomDataSource.getUser(login))
-            }
+            callback(roomDataSource.getUser(login))
         }.start()
     }
 
     override fun getAllUsers(callback: (List<UserEntity>) -> Unit) {
         Thread {
             Thread.sleep(fakeDelay())
-            uiHandler.post {
-                callback(roomDataSource.getAllUsers())
-            }
+            callback(roomDataSource.getAllUsers())
         }.start()
     }
 
     override fun updateUser(
-        userId: String,
+        userId: Int,
         newLogin: String,
         newPassword: String,
         isAuthorized: Boolean,
-        callback: (Int) -> Unit
+        callback: (Int) -> Unit,
     ) {
         Thread {
             Thread.sleep(fakeDelay())
             roomDataSource.updateUser(userId, newLogin, newPassword, isAuthorized)
-            uiHandler.post {
-                callback(
-                    when (roomDataSource.getUser(newLogin)) {
-                        null -> {
-                            MockDatabaseConstants.ResponseCodes.RESPONSE_USER_UPDATE_FAILED.code
-                        }
-                        else -> {
-                            MockDatabaseConstants.ResponseCodes.RESPONSE_SUCCESS.code
-                        }
+            callback(
+                when (roomDataSource.getUser(newLogin)) {
+                    null -> {
+                        RepositoryResponseCodes.RESPONSE_USER_UPDATE_FAILED.code
                     }
-                )
-            }
+                    else -> {
+                        RepositoryResponseCodes.RESPONSE_SUCCESS.code
+                    }
+                }
+            )
         }.start()
     }
 
     override fun deleteUser(login: String, callback: (Int) -> Unit) {
         Thread {
             Thread.sleep(fakeDelay())
-            uiHandler.post {
-                callback(
-                    when (roomDataSource.getUser(login)) {
-                        null -> {
-                            MockDatabaseConstants.ResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code
-                        }
-                        else -> {
-                            roomDataSource.deleteUser(login)
-                            when (roomDataSource.getUser(login)) {
-                                null -> {
-                                    MockDatabaseConstants.ResponseCodes.RESPONSE_SUCCESS.code
-                                }
-                                else -> {
-                                    MockDatabaseConstants.ResponseCodes.RESPONSE_USER_DELETE_FAILED.code
-                                }
+            callback(
+                when (roomDataSource.getUser(login)) {
+                    null -> {
+                        RepositoryResponseCodes.RESPONSE_LOGIN_NOT_REGISTERED.code
+                    }
+                    else -> {
+                        roomDataSource.deleteUser(login)
+                        when (roomDataSource.getUser(login)) {
+                            null -> {
+                                RepositoryResponseCodes.RESPONSE_SUCCESS.code
+                            }
+                            else -> {
+                                RepositoryResponseCodes.RESPONSE_USER_DELETE_FAILED.code
                             }
                         }
                     }
-                )
-            }
+                }
+            )
         }.start()
     }
+}
+
+private enum class RepositoryResponseCodes(val code: Int) {
+    RESPONSE_SUCCESS(200),
+    RESPONSE_LOGIN_NOT_REGISTERED(404),
+    RESPONSE_LOGIN_REGISTERED_YET(444),
+    RESPONSE_USER_UPDATE_FAILED(454),
+    RESPONSE_USER_DELETE_FAILED(464)
 }

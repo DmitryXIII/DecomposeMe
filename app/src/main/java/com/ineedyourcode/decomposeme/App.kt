@@ -1,12 +1,9 @@
 package com.ineedyourcode.decomposeme
 
 import android.app.Application
-import android.os.Handler
-import android.os.Looper
-import androidx.room.Room
+import android.content.Context
 import com.ineedyourcode.decomposeme.data.api.MockUserDatabaseApi
-import com.ineedyourcode.decomposeme.data.db.UserDao
-import com.ineedyourcode.decomposeme.data.db.UserDb
+import com.ineedyourcode.decomposeme.data.db.UserDatabase
 import com.ineedyourcode.decomposeme.data.interactor.login.MockUserLoginInteractor
 import com.ineedyourcode.decomposeme.data.interactor.registration.MockUserRegistrationInteractor
 import com.ineedyourcode.decomposeme.data.interactor.remindpassword.MockRemindPasswordInteractor
@@ -21,49 +18,36 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        instance = this
+        applicationInstance = this
+        appContext = this.applicationContext
     }
 
     companion object {
-        private const val APP_DB_NAME = "Users.db"
-        private val uiHandler = Handler(Looper.getMainLooper())
+        private lateinit var applicationInstance: App
+        private lateinit var appContext: Context
+
+        private val userDatabase: UserDatabase by lazy {
+            UserDatabase.getUserDatabase(appContext)
+        }
+
         private val userDatabaseApi: IUserDatabaseApi by lazy {
-            MockUserDatabaseApi(getUserDao())
+            MockUserDatabaseApi(userDatabase.userDao())
         }
-        private var instance: App? = null
-        private var appDb: UserDb? = null
+
         val userRepository: IUserDatabaseRepository by lazy {
-            MockUserDatabaseRepository(getUserDao(), uiHandler)
+            MockUserDatabaseRepository(userDatabase.userDao())
         }
+
         val userLoginInteractor: IUserLoginInteractor by lazy {
-            MockUserLoginInteractor(userDatabaseApi, uiHandler)
+            MockUserLoginInteractor(userDatabaseApi)
         }
+
         val userRemindPasswordInteractor: IRemindPasswordInteractor by lazy {
-            MockRemindPasswordInteractor(userDatabaseApi, uiHandler)
+            MockRemindPasswordInteractor(userDatabaseApi)
         }
+
         val userRegistrationInteractor: IUserRegistrationInteractor by lazy {
             MockUserRegistrationInteractor(userRepository)
-        }
-
-
-        private fun getUserDao(): UserDao {
-            if (appDb == null) {
-                synchronized(UserDb::class.java) {
-                    if (appDb == null) {
-                        if (instance == null) throw IllegalAccessException("App is null")
-                        appDb = Room.databaseBuilder(
-                            instance!!.applicationContext,
-                            UserDb::class.java,
-                            APP_DB_NAME
-                        )
-                            .allowMainThreadQueries()
-                            .fallbackToDestructiveMigration()
-                            .build()
-                    }
-                }
-            }
-
-            return appDb!!.userDao()
         }
     }
 }
